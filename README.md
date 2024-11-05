@@ -58,6 +58,7 @@ Important: iOS requires you to add the "Privacy - Camera Usage Description" key 
 
 <br>
 
+
 <strong>Basic Usage</strong>
 
 To use KScan, simply add the ScannerView in your app like this:
