@@ -59,7 +59,7 @@ if (showScanner) {
 
 To dismiss the scanner, set the showScanner variable to false in the corresponding cases within the ScannerView closure after processing the result.
 
-```
+```Kotlin
 if (showScanner) {
     ScannerView(
         codeTypes = listOf(
