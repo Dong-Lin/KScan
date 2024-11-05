@@ -78,7 +78,7 @@ if (showScanner) {
                 println("error: ${result.exception.message}")
             }
             BarcodeResult.OnCanceled -> {
-                showScanner = false
+                println("scan canceled")
             }
         }
     }
