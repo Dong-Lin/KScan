@@ -11,3 +11,8 @@
 <p align="center">
 Compose Multiplatform Barcode Scanning
 </p>
+
+<p align="center">
+  <img alt="Platform Android" src="https://img.shields.io/badge/Platform-Android-brightgreen"/>
+  <img alt="Platform iOS" src="https://img.shields.io/badge/Platform-iOS-lightgray"/>
+</p>
