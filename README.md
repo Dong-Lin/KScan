@@ -17,8 +17,10 @@ Compose Multiplatform Barcode Scanning Library
   <img alt="Platform iOS" src="https://img.shields.io/badge/Platform-iOS-lightgray"/>
 </p>
 
-## Android - MLKit
+<br>
+
+### Android - MLKit
 - Uses Google’s MLKit library for barcode scanning on Android.
 
-## iOS - AVFoundation
+### iOS - AVFoundation
 - Utilizes Apple’s AVFoundation framework for camera setup and barcode scanning on iOS.
