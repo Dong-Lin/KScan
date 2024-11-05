@@ -38,11 +38,10 @@ To use KScan, simply add the ScannerView in your app like this:
 ```Kotlin
 if (showScanner) {
     ScannerView(
-        codeTypes =
-            listOf(
-                BarcodeFormats.FORMAT_QR_CODE,
-                BarcodeFormats.FORMAT_EAN_13,
-            ),
+        codeTypes = listOf(
+            BarcodeFormats.FORMAT_QR_CODE,
+            BarcodeFormats.FORMAT_EAN_13,
+        )
     ) { result ->
         when (result) {
             is BarcodeResult.OnSuccess -> {
