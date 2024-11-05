@@ -39,6 +39,7 @@ To integrate KScan into your project
 Add the dependency in your common module's commonMain source set
 
 <br>
+
 ```
 implementation("io.github.ismai117:KScan:0.1.0-alpha01")
 ```
