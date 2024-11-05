@@ -54,7 +54,9 @@ implementation("io.github.ismai117:KScan:0.1.0-alpha01")
 
 <br>
 Important: iOS requires you to add the "Privacy - Camera Usage Description" key to your Info.plist file inside xcode, you need to provide a reason for why you want to access the camera.
-</br><br>
+</br>
+
+<br></br>
 
 <strong>Basic Usage</strong>
 
