@@ -9,5 +9,5 @@
 <h1 align="center">KScan</h1></br>
 
 <p align="center">
-Compose Multiplatform Barcode Scanning.
+Compose Multiplatform Barcode Scanning
 </p>
