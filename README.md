@@ -8,9 +8,6 @@
  
 <h1 align="center">KScan</h1></br>
 
-</br>
-<br>
-
 <p align="center">
 Compose Multiplatform Barcode Scanning Library
 </p>
@@ -23,6 +20,8 @@ Compose Multiplatform Barcode Scanning Library
 <br>
 
 <strong>KScan is a Compose Multiplatform library that makes it easy to scan barcodes in your apps.</strong>
+
+<br>
 
 <strong>Android - MLKit</strong>
 - Uses Google’s MLKit library for barcode scanning on Android.
