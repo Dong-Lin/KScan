@@ -8,7 +8,7 @@
  
 <h1 align="center">KScan</h1></br>
 
-<br>
+</br>
 
 <p align="center">
 Compose Multiplatform Barcode Scanning Library
