@@ -21,6 +21,10 @@ internal fun ScannerHeader(
     onCancel: () -> Unit,
     torchEnabled: Boolean,
     onTorchEnabled: (Boolean) -> Unit,
+    containerColor: Color = Color(0xFF291544),
+    navigationIconColor: Color = Color.White,
+    titleColor: Color = Color.White,
+    actionIconColor: Color = Color.White,
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -58,10 +62,10 @@ internal fun ScannerHeader(
         },
         colors =
             TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = Color(0xFF291544),
-                navigationIconContentColor = Color.White,
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White,
+                containerColor = containerColor,
+                navigationIconContentColor = navigationIconColor,
+                titleContentColor = titleColor,
+                actionIconContentColor = actionIconColor,
             ),
         modifier = modifier,
     )

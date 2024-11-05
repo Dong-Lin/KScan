@@ -14,6 +14,7 @@ internal fun ScannerUI(
     zoomRatio: Float,
     zoomRatioOnChange: (Float) -> Unit,
     maxZoomRatio: Float,
+    colors: ScannerColors = scannerColors(),
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize(),
@@ -30,6 +31,10 @@ internal fun ScannerUI(
             onCancel = onCancel,
             torchEnabled = torchEnabled,
             onTorchEnabled = onTorchEnabled,
+            containerColor = colors.headerContainerColor,
+            navigationIconColor = colors.headerNavigationIconColor,
+            titleColor = colors.headerTitleColor,
+            actionIconColor = colors.headerActionIconColor,
         )
 
         ScannerBarcodeFrame(
@@ -40,6 +45,7 @@ internal fun ScannerUI(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 },
+            frameColor = colors.barcodeFrameColor,
         )
 
         ScannerZoomAdjuster(
@@ -53,6 +59,8 @@ internal fun ScannerUI(
             zoomRatio = zoomRatio,
             zoomRatioOnChange = zoomRatioOnChange,
             maxZoomRatio = maxZoomRatio,
+            containerColor = colors.zoomControllerContainerColor,
+            contentColor = colors.zoomControllerContentColor,
         )
     }
 }

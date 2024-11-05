@@ -26,13 +26,15 @@ internal fun ScannerZoomAdjuster(
     zoomRatioOnChange: (Float) -> Unit,
     maxZoomRatio: Float,
     zoomStep: Float = 0.5f,
+    containerColor: Color = Color(0xFF291544),
+    contentColor: Color = Color.White,
 ) {
     ElevatedCard(
         modifier = modifier,
         colors =
             CardDefaults.elevatedCardColors(
-                containerColor = Color(0xFF291544),
-                contentColor = Color.White,
+                containerColor = containerColor,
+                contentColor = contentColor,
             ),
     ) {
         Row(
@@ -47,6 +49,7 @@ internal fun ScannerZoomAdjuster(
                 Icon(
                     imageVector = Icons.Default.Remove,
                     contentDescription = "Zoom Out",
+                    tint = contentColor,
                 )
             }
 
@@ -67,6 +70,7 @@ internal fun ScannerZoomAdjuster(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Zoom In",
+                    tint = contentColor,
                 )
             }
         }
