@@ -24,8 +24,8 @@ Compose Multiplatform Barcode Scanning Library
 <p align="center">
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/24fac096-51f4-4c2c-b02e-b3cd7ff9aa32" alt="android scanner"></td>
-    <td><img src="https://github.com/user-attachments/assets/a4c15bc2-77a4-4f26-b803-713baafb76d6" alt="ios scanner"></td>
+    <td><img src="https://github.com/user-attachments/assets/24fac096-51f4-4c2c-b02e-b3cd7ff9aa32" alt="android scanner"  style="height: 600px; width: auto;"/>></td>
+    <td><img src="https://github.com/user-attachments/assets/a4c15bc2-77a4-4f26-b803-713baafb76d6" alt="ios scanner"  style="height: 600px; width: auto;"/>></td>
   </tr>
 </table>
 </p>
