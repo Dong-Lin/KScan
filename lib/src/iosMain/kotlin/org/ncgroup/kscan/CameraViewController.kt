@@ -110,7 +110,6 @@ class CameraViewController(
             captureSession.addOutput(metadataOutput)
             metadataOutput.setMetadataObjectsDelegate(this, dispatch_get_main_queue())
 
-            // Set the metadata object types based on requested code types
             val supportedTypes = getMetadataObjectTypes()
             if (supportedTypes.isEmpty()) {
                 onBarcodeFailed(Exception("No supported barcode types selected"))
@@ -179,7 +178,6 @@ class CameraViewController(
                 previewLayer.transformedMetadataObjectForMetadataObject(metadataObject)
                     as? AVMetadataMachineReadableCodeObject ?: continue
 
-            // Check if the barcode type is in the requested formats
             if (!isRequestedFormat(barcodeObject.type)) continue
 
             val bounds = barcodeObject.bounds

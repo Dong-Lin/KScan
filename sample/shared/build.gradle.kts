@@ -29,6 +29,10 @@ kotlin {
             implementation(compose.material3)
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            api(libs.moko.permissions)
+            api(libs.moko.permissions.compose)
             api(project(":lib"))
         }
         androidMain.dependencies {
