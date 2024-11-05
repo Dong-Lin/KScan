@@ -16,9 +16,16 @@ kotlin {
 
     jvm("desktop")
 
-    iosArm64()
-    iosX64()
-    iosSimulatorArm64()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "lib"
+            isStatic = true
+        }
+    }
 
     sourceSets {
         androidMain.dependencies {
