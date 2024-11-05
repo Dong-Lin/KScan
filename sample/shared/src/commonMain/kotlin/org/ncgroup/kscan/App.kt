@@ -81,7 +81,6 @@ fun App() {
                             is BarcodeResult.OnSuccess -> {
                                 barcode = result.barcode.data
                                 format = result.barcode.format
-                                println("barcode: $barcode, type: ${result.barcode.format}")
                                 showScanner = false
                             }
 

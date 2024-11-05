@@ -25,6 +25,7 @@ import platform.AVFoundation.torchMode
 @Composable
 actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
+    colors: ScannerColors,
     result: (BarcodeResult) -> Unit,
 ) {
     var torchEnabled by remember { mutableStateOf(false) }
@@ -102,6 +103,7 @@ actual fun ScannerView(
                 zoomRatio = ratio
             },
             maxZoomRatio = maxZoomRatio,
+            colors = colors,
         )
 
         if (showBottomSheet) {

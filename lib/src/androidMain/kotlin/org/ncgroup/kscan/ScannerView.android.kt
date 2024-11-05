@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 @Composable
 actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
+    colors: ScannerColors,
     result: (BarcodeResult) -> Unit,
 ) {
     val context = LocalContext.current
@@ -141,6 +142,7 @@ actual fun ScannerView(
             zoomRatio = zoomRatio,
             zoomRatioOnChange = { cameraControl?.setZoomRatio(it) },
             maxZoomRatio = maxZoomRatio,
+            colors = colors,
         )
 
         if (showBottomSheet) {
