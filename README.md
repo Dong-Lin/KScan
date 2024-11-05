@@ -19,17 +19,17 @@ Compose Multiplatform Barcode Scanning Library
 
 <br>
 
-KScan is a Compose Multiplatform library that makes it easy to scan barcodes in your apps.
+<strong>KScan is a Compose Multiplatform library that makes it easy to scan barcodes in your apps.</strong>
 
-#### Android - MLKit
+<strong>Android - MLKit</strong>
 - Uses Google’s MLKit library for barcode scanning on Android.
 
-#### iOS - AVFoundation
+<strong>iOS - AVFoundation</strong>
 - Utilizes Apple’s AVFoundation framework for camera setup and barcode scanning on iOS.
 
 <br>
 
-Basic Usage
+<strong>Basic Usage</strong>
 
 To use KScan, simply add the ScannerView in your app like this:
 
