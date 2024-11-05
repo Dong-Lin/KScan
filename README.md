@@ -26,3 +26,60 @@ KScan is a Compose Multiplatform library that makes it easy to scan barcodes in 
 
 #### iOS - AVFoundation
 - Utilizes Apple’s AVFoundation framework for camera setup and barcode scanning on iOS.
+
+<br>
+
+Basic Usage
+
+To use KScan, simply add the ScannerView in your app like this:
+
+```Kotlin
+if (showScanner) {
+    ScannerView(
+        codeTypes =
+            listOf(
+                BarcodeFormats.FORMAT_QR_CODE,
+                BarcodeFormats.FORMAT_EAN_13,
+            ),
+    ) { result ->
+        when (result) {
+            is BarcodeResult.OnSuccess -> {
+                println("Barcode: ${result.barcode.data}, format: ${result.barcode.format}")
+            }
+            is BarcodeResult.OnFailed -> {
+                println("error: ${result.exception.message}")
+            }
+            BarcodeResult.OnCanceled -> {
+                showScanner = false
+            }
+        }
+    }
+}
+```
+
+To dismiss the scanner, set the showScanner variable to false in the corresponding cases within the ScannerView closure after processing the result.
+
+```
+if (showScanner) {
+    ScannerView(
+        codeTypes = listOf(
+            BarcodeFormats.FORMAT_QR_CODE,
+            BarcodeFormats.FORMAT_EAN_13,
+        )
+    ) { result ->
+        when (result) {
+            is BarcodeResult.OnSuccess -> {
+                println("Barcode: ${result.barcode.data}, format: ${result.barcode.format}")
+                showScanner = false
+            }
+            is BarcodeResult.OnFailed -> {
+                println("Error: ${result.exception.message}")
+                showScanner = false
+            }
+            BarcodeResult.OnCanceled -> {
+                showScanner = false
+            }
+        }
+    }
+}
+```
