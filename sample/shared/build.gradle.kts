@@ -31,17 +31,21 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            api(libs.moko.permissions)
-            api(libs.moko.permissions.compose)
             api(project(":lib"))
         }
         androidMain.dependencies {
             api(libs.androidx.activityCompose)
             api(libs.androidx.appcompat)
             api(libs.androidx.core.ktx)
+            api(libs.moko.permissions)
+            api(libs.moko.permissions.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+        }
+        iosMain.dependencies {
+            api(libs.moko.permissions)
+            api(libs.moko.permissions.compose)
         }
     }
 }
