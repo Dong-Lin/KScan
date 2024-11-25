@@ -34,6 +34,7 @@ kotlin {
             api(project(":lib"))
         }
         androidMain.dependencies {
+            implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
             api(libs.androidx.activityCompose)
             api(libs.androidx.appcompat)
             api(libs.androidx.core.ktx)
