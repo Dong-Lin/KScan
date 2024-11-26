@@ -89,6 +89,8 @@ class BarcodeAnalyzer(
                 for (barcode in barcodes) {
                     val boundingBox = barcode.boundingBox
 
+                    Log.d("barcode format", "format: ${barcode.format}, type: ${barcode.valueType}")
+
                     if (!isRequestedFormat(barcode)) continue
 
                     if (boundingBox != null) {
@@ -127,15 +129,12 @@ class BarcodeAnalyzer(
                     barcodesDetected.clear()
                     barcodesConfirmed.clear()
                 }
-
-                imageProxy.close()
             }
                 .addOnFailureListener {
                     onFailed(it)
                 }
                 .addOnCanceledListener {
                     onCanceled()
-                    imageProxy.close()
                 }
                 .addOnCompleteListener {
                     imageProxy.close()
