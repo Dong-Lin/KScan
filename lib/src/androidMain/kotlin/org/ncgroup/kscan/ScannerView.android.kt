@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
+    onFrameOutside: () -> Unit,
     result: (BarcodeResult) -> Unit,
 ) {
     val context = LocalContext.current
@@ -72,7 +73,7 @@ actual fun ScannerView(
         }
     }
 
-    val frame = LocalDensity.current.run { 260.dp.toPx() }
+    val frame = LocalDensity.current.run { 280.dp.toPx() }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -92,7 +93,7 @@ actual fun ScannerView(
 
                 val imageAnalysis =
                     ImageAnalysis.Builder()
-                        .setTargetResolution(Size(1200, 720))
+                        .setTargetResolution(Size(1280, 720))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
 
@@ -114,6 +115,7 @@ actual fun ScannerView(
                         },
                         onFailed = { result(BarcodeResult.OnFailed(Exception(it))) },
                         onCanceled = { result(BarcodeResult.OnCanceled) },
+                        onFrameOutside = onFrameOutside,
                     ).also { barcodeAnalyzer = it },
                 )
 

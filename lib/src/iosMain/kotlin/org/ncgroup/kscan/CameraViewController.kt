@@ -1,5 +1,6 @@
 package org.ncgroup.kscan
 
+import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.AVFoundation.AVCaptureConnection
@@ -24,6 +25,7 @@ import platform.AVFoundation.AVMetadataObjectTypePDF417Code
 import platform.AVFoundation.AVMetadataObjectTypeQRCode
 import platform.AVFoundation.AVMetadataObjectTypeUPCECode
 import platform.AVFoundation.videoZoomFactor
+import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectMake
 import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
@@ -37,22 +39,56 @@ class CameraViewController(
     private val onBarcodeSuccess: (List<Barcode>) -> Unit,
     private val onBarcodeFailed: (Exception) -> Unit,
     private val onBarcodeCanceled: () -> Unit,
+    private val onFrameOutside: () -> Unit,
     private val onMaxZoomRatioAvailable: (Float) -> Unit,
 ) : UIViewController(null, null), AVCaptureMetadataOutputObjectsDelegateProtocol {
     private lateinit var captureSession: AVCaptureSession
     private lateinit var previewLayer: AVCaptureVideoPreviewLayer
     private lateinit var videoInput: AVCaptureDeviceInput
+    private var scanFrame: CValue<CGRect>? = null
 
     private val barcodesDetected = mutableMapOf<String, Int>()
     private val barcodesConfirmed = mutableSetOf<Barcode>()
-
-    private var scanFrame = CGRectMake(0.0, 0.0, 0.0, 0.0)
+    private val frameTolerance = frame * 0.1f
 
     override fun viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.blackColor
         setupCamera()
         onMaxZoomRatioAvailable(device.activeFormat.videoMaxZoomFactor.toFloat())
+    }
+
+    private fun setupCamera() {
+        captureSession = AVCaptureSession()
+
+        try {
+            videoInput = AVCaptureDeviceInput.deviceInputWithDevice(device, null) as AVCaptureDeviceInput
+        } catch (e: Exception) {
+            onBarcodeFailed(e)
+            return
+        }
+
+        setupCaptureSession()
+    }
+
+    private fun setupCaptureSession() {
+        val metadataOutput = AVCaptureMetadataOutput()
+
+        if (!captureSession.canAddInput(videoInput)) {
+            onBarcodeFailed(Exception("Failed to add video input"))
+            return
+        }
+        captureSession.addInput(videoInput)
+
+        if (!captureSession.canAddOutput(metadataOutput)) {
+            onBarcodeFailed(Exception("Failed to add metadata output"))
+            return
+        }
+        captureSession.addOutput(metadataOutput)
+
+        setupMetadataOutput(metadataOutput)
+        setupPreviewLayer()
+        captureSession.startRunning()
     }
 
     private fun getMetadataObjectTypes(): List<AVMetadataObjectType> {
@@ -88,63 +124,56 @@ class CameraViewController(
         }
     }
 
-    private fun setupCamera() {
-        captureSession = AVCaptureSession()
-        val metadataOutput = AVCaptureMetadataOutput()
+    private fun setupMetadataOutput(metadataOutput: AVCaptureMetadataOutput) {
+        metadataOutput.setMetadataObjectsDelegate(this, dispatch_get_main_queue())
 
-        try {
-            videoInput = AVCaptureDeviceInput.deviceInputWithDevice(device, null) as AVCaptureDeviceInput
-        } catch (e: Exception) {
-            onBarcodeFailed(e)
+        val supportedTypes = getMetadataObjectTypes()
+        if (supportedTypes.isEmpty()) {
+            onBarcodeFailed(Exception("No supported barcode types selected"))
             return
         }
+        metadataOutput.metadataObjectTypes = supportedTypes
+    }
 
-        if (captureSession.canAddInput(videoInput)) {
-            captureSession.addInput(videoInput)
-        } else {
-            onBarcodeFailed(Exception("Failed to add video input"))
-            return
-        }
-
-        if (captureSession.canAddOutput(metadataOutput)) {
-            captureSession.addOutput(metadataOutput)
-            metadataOutput.setMetadataObjectsDelegate(this, dispatch_get_main_queue())
-
-            val supportedTypes = getMetadataObjectTypes()
-            if (supportedTypes.isEmpty()) {
-                onBarcodeFailed(Exception("No supported barcode types selected"))
-                return
-            }
-            metadataOutput.metadataObjectTypes = supportedTypes
-        } else {
-            onBarcodeFailed(Exception("Failed to add metadata output"))
-            return
-        }
-
+    private fun setupPreviewLayer() {
         previewLayer = AVCaptureVideoPreviewLayer.layerWithSession(captureSession)
         previewLayer.frame = view.layer.bounds
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         view.layer.addSublayer(previewLayer)
 
-        setupScanningArea(metadataOutput)
-
-        captureSession.startRunning()
+        updateScanFrame()
     }
 
-    private fun setupScanningArea(metadataOutput: AVCaptureMetadataOutput) {
-        val viewWidth = view.frame.useContents { size.width }
-        val viewHeight = view.frame.useContents { size.height }
+    private fun updateScanFrame() {
+        val viewBounds = view.bounds
+        val viewWidth = viewBounds.useContents { size.width }
+        val viewHeight = viewBounds.useContents { size.height }
+
+        val effectiveFrame = frame + (frameTolerance * 2)
+        val centerX = (viewWidth - effectiveFrame) / 2
+        val centerY = (viewHeight - effectiveFrame) / 2
 
         scanFrame =
             CGRectMake(
-                x = (viewWidth - frame) / 2,
-                y = (viewHeight - frame) / 2,
-                width = frame.toDouble(),
-                height = frame.toDouble(),
+                x = centerX.toDouble(),
+                y = centerY.toDouble(),
+                width = effectiveFrame.toDouble(),
+                height = effectiveFrame.toDouble(),
             )
 
-        val interest = previewLayer.metadataOutputRectOfInterestForRect(scanFrame)
-        metadataOutput.rectOfInterest = interest
+        if (::captureSession.isInitialized) {
+            val metadataOutput = captureSession.outputs.firstOrNull() as? AVCaptureMetadataOutput
+            metadataOutput?.let {
+                val frameRect =
+                    CGRectMake(
+                        x = (viewWidth - frame) / 2,
+                        y = (viewHeight - frame) / 2,
+                        width = frame.toDouble(),
+                        height = frame.toDouble(),
+                    )
+                it.rectOfInterest = previewLayer.metadataOutputRectOfInterestForRect(frameRect)
+            }
+        }
     }
 
     override fun viewWillAppear(animated: Boolean) {
@@ -164,6 +193,7 @@ class CameraViewController(
     override fun viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer.frame = view.layer.bounds
+        updateScanFrame()
     }
 
     override fun captureOutput(
@@ -171,7 +201,13 @@ class CameraViewController(
         didOutputMetadataObjects: List<*>,
         fromConnection: AVCaptureConnection,
     ) {
-        for (metadataObject in didOutputMetadataObjects) {
+        processBarcodes(didOutputMetadataObjects)
+    }
+
+    private fun processBarcodes(metadataObjects: List<*>) {
+        val currentScanFrame = scanFrame ?: return
+
+        for (metadataObject in metadataObjects) {
             if (metadataObject !is AVMetadataMachineReadableCodeObject) continue
 
             val barcodeObject =
@@ -180,42 +216,38 @@ class CameraViewController(
 
             if (!isRequestedFormat(barcodeObject.type)) continue
 
+            val stringValue = barcodeObject.stringValue ?: continue
             val bounds = barcodeObject.bounds
 
-            val boundsX = bounds.useContents { this.origin.x }
-            val boundsY = bounds.useContents { this.origin.y }
-            val boundsWidth = bounds.useContents { this.size.width }
-            val boundsHeight = bounds.useContents { this.size.height }
-
-            val scanFrameX = scanFrame.useContents { this.origin.x }
-            val scanFrameY = scanFrame.useContents { this.origin.y }
-            val scanFrameWidth = scanFrame.useContents { this.size.width }
-            val scanFrameHeight = scanFrame.useContents { this.size.height }
-
-            if (boundsX < scanFrameX ||
-                boundsY < scanFrameY ||
-                boundsX + boundsWidth > scanFrameX + scanFrameWidth ||
-                boundsY + boundsHeight > scanFrameY + scanFrameHeight
-            ) {
-                continue
-            }
-
-            val stringValue = barcodeObject.stringValue ?: continue
-
-            barcodesDetected[stringValue] = (barcodesDetected[stringValue] ?: 0) + 1
-
-            if (requireNotNull(barcodesDetected[stringValue]) >= 2) {
-                if (!barcodesConfirmed.any { it.data == stringValue }) {
-                    barcodesConfirmed.add(
-                        Barcode(
-                            data = stringValue,
-                            format = getBarcodeFormat(barcodeObject.type),
-                        ),
-                    )
-                }
+            if (isBarcodeInsideFrame(bounds, currentScanFrame)) {
+                processDetectedBarcode(stringValue, barcodeObject.type)
+            } else {
+                onFrameOutside()
             }
         }
 
+        checkConfirmedBarcodes()
+    }
+
+    private fun processDetectedBarcode(
+        value: String,
+        type: AVMetadataObjectType,
+    ) {
+        barcodesDetected[value] = (barcodesDetected[value] ?: 0) + 1
+
+        if ((barcodesDetected[value] ?: 0) >= 2) {
+            if (!barcodesConfirmed.any { it.data == value }) {
+                barcodesConfirmed.add(
+                    Barcode(
+                        data = value,
+                        format = getBarcodeFormat(type),
+                    ),
+                )
+            }
+        }
+    }
+
+    private fun checkConfirmedBarcodes() {
         val confirmedBarcodes = barcodesConfirmed.toList()
         if (confirmedBarcodes.isNotEmpty()) {
             onBarcodeSuccess(confirmedBarcodes)
@@ -223,6 +255,21 @@ class CameraViewController(
             barcodesConfirmed.clear()
             captureSession.stopRunning()
         }
+    }
+
+    private fun isBarcodeInsideFrame(
+        barcodeBounds: CValue<CGRect>,
+        frame: CValue<CGRect>,
+    ): Boolean {
+        val tolerance = frameTolerance.toDouble()
+
+        val bounds = barcodeBounds.useContents { this }
+        val frameRect = frame.useContents { this }
+
+        return bounds.origin.x >= (frameRect.origin.x - tolerance) &&
+            bounds.origin.y >= (frameRect.origin.y - tolerance) &&
+            (bounds.origin.x + bounds.size.width) <= (frameRect.origin.x + frameRect.size.width + tolerance) &&
+            (bounds.origin.y + bounds.size.height) <= (frameRect.origin.y + frameRect.size.height + tolerance)
     }
 
     private fun isRequestedFormat(type: AVMetadataObjectType): Boolean {
