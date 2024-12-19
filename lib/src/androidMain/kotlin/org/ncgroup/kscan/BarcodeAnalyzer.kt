@@ -12,12 +12,10 @@ import com.google.mlkit.vision.common.InputImage
 
 class BarcodeAnalyzer(
     private val camera: Camera?,
-    private val frame: Float,
     private val codeTypes: List<BarcodeFormat>,
     private val onSuccess: (List<Barcode>) -> Unit,
     private val onFailed: (Exception) -> Unit,
     private val onCanceled: () -> Unit,
-    private val onFrameOutside: () -> Unit,
 ) : ImageAnalysis.Analyzer {
     private val options =
         BarcodeScannerOptions.Builder()
@@ -63,7 +61,7 @@ class BarcodeAnalyzer(
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
         scanner.process(image)
             .addOnSuccessListener { barcodes ->
-                processBarcodes(barcodes, imageProxy)
+                processBarcodes(barcodes)
             }
             .addOnFailureListener {
                 onFailed(it)
@@ -78,48 +76,14 @@ class BarcodeAnalyzer(
             }
     }
 
-    private fun processBarcodes(
-        barcodes: List<com.google.mlkit.vision.barcode.common.Barcode>,
-        imageProxy: ImageProxy,
-    ) {
-        val tolerance = frame * 0.1f
-
-        val frameLeft = (imageProxy.width - frame) / 2 - tolerance
-        val frameTop = (imageProxy.height - frame) / 2 - tolerance
-        val frameRight = frameLeft + frame + (tolerance * 2)
-        val frameBottom = frameTop + frame + (tolerance * 2)
-
+    private fun processBarcodes(barcodes: List<com.google.mlkit.vision.barcode.common.Barcode>) {
         barcodes.forEach { barcode ->
-
             if (!isRequestedFormat(barcode)) {
                 Log.d("barcode_flow", "Format check failed")
                 return@forEach
             }
-            Log.d("barcode_flow", "Format check passed")
-
-            val boundingBox =
-                barcode.boundingBox ?: run {
-                    Log.d("barcode_flow", "No bounding box found")
-                    return@forEach
-                }
-
-            val displayValue =
-                barcode.displayValue ?: run {
-                    Log.d("barcode_flow", "No display value found")
-                    return@forEach
-                }
-
-            if (boundingBox.left >= frameLeft &&
-                boundingBox.top >= frameTop &&
-                boundingBox.right <= frameRight &&
-                boundingBox.bottom <= frameBottom
-            ) {
-                processDetectedBarcode(displayValue, barcode)
-            } else {
-                onFrameOutside()
-            }
+            processDetectedBarcode(barcode.displayValue.orEmpty(), barcode)
         }
-
         val confirmedBarcodes = barcodesConfirmed.toList()
         if (confirmedBarcodes.isNotEmpty()) {
             onSuccess(confirmedBarcodes)

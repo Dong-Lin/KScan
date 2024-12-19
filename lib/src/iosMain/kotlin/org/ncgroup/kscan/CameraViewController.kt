@@ -2,7 +2,6 @@ package org.ncgroup.kscan
 
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.useContents
 import platform.AVFoundation.AVCaptureConnection
 import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.AVCaptureDeviceInput
@@ -26,7 +25,6 @@ import platform.AVFoundation.AVMetadataObjectTypeQRCode
 import platform.AVFoundation.AVMetadataObjectTypeUPCECode
 import platform.AVFoundation.videoZoomFactor
 import platform.CoreGraphics.CGRect
-import platform.CoreGraphics.CGRectMake
 import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
 import platform.darwin.dispatch_get_main_queue
@@ -39,7 +37,6 @@ class CameraViewController(
     private val onBarcodeSuccess: (List<Barcode>) -> Unit,
     private val onBarcodeFailed: (Exception) -> Unit,
     private val onBarcodeCanceled: () -> Unit,
-    private val onFrameOutside: () -> Unit,
     private val onMaxZoomRatioAvailable: (Float) -> Unit,
 ) : UIViewController(null, null), AVCaptureMetadataOutputObjectsDelegateProtocol {
     private lateinit var captureSession: AVCaptureSession
@@ -145,33 +142,12 @@ class CameraViewController(
     }
 
     private fun updateScanFrame() {
-        val viewBounds = view.bounds
-        val viewWidth = viewBounds.useContents { size.width }
-        val viewHeight = viewBounds.useContents { size.height }
-
-        val effectiveFrame = frame + (frameTolerance * 2)
-        val centerX = (viewWidth - effectiveFrame) / 2
-        val centerY = (viewHeight - effectiveFrame) / 2
-
-        scanFrame =
-            CGRectMake(
-                x = centerX.toDouble(),
-                y = centerY.toDouble(),
-                width = effectiveFrame.toDouble(),
-                height = effectiveFrame.toDouble(),
-            )
-
         if (::captureSession.isInitialized) {
             val metadataOutput = captureSession.outputs.firstOrNull() as? AVCaptureMetadataOutput
-            metadataOutput?.let {
-                val frameRect =
-                    CGRectMake(
-                        x = (viewWidth - frame) / 2,
-                        y = (viewHeight - frame) / 2,
-                        width = frame.toDouble(),
-                        height = frame.toDouble(),
-                    )
-                it.rectOfInterest = previewLayer.metadataOutputRectOfInterestForRect(frameRect)
+            metadataOutput?.rectOfInterest?.let {
+                previewLayer.metadataOutputRectOfInterestForRect(
+                    it,
+                )
             }
         }
     }
@@ -205,27 +181,16 @@ class CameraViewController(
     }
 
     private fun processBarcodes(metadataObjects: List<*>) {
-        val currentScanFrame = scanFrame ?: return
-
         for (metadataObject in metadataObjects) {
             if (metadataObject !is AVMetadataMachineReadableCodeObject) continue
-
             val barcodeObject =
                 previewLayer.transformedMetadataObjectForMetadataObject(metadataObject)
                     as? AVMetadataMachineReadableCodeObject ?: continue
 
             if (!isRequestedFormat(barcodeObject.type)) continue
-
             val stringValue = barcodeObject.stringValue ?: continue
-            val bounds = barcodeObject.bounds
-
-            if (isBarcodeInsideFrame(bounds, currentScanFrame)) {
-                processDetectedBarcode(stringValue, barcodeObject.type)
-            } else {
-                onFrameOutside()
-            }
+            processDetectedBarcode(stringValue, barcodeObject.type)
         }
-
         checkConfirmedBarcodes()
     }
 
@@ -255,21 +220,6 @@ class CameraViewController(
             barcodesConfirmed.clear()
             captureSession.stopRunning()
         }
-    }
-
-    private fun isBarcodeInsideFrame(
-        barcodeBounds: CValue<CGRect>,
-        frame: CValue<CGRect>,
-    ): Boolean {
-        val tolerance = frameTolerance.toDouble()
-
-        val bounds = barcodeBounds.useContents { this }
-        val frameRect = frame.useContents { this }
-
-        return bounds.origin.x >= (frameRect.origin.x - tolerance) &&
-            bounds.origin.y >= (frameRect.origin.y - tolerance) &&
-            (bounds.origin.x + bounds.size.width) <= (frameRect.origin.x + frameRect.size.width + tolerance) &&
-            (bounds.origin.y + bounds.size.height) <= (frameRect.origin.y + frameRect.size.height + tolerance)
     }
 
     private fun isRequestedFormat(type: AVMetadataObjectType): Boolean {

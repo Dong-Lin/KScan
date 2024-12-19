@@ -6,6 +6,5 @@ import androidx.compose.runtime.Composable
 expect fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors = scannerColors(),
-    onFrameOutside: () -> Unit = {},
     result: (BarcodeResult) -> Unit,
 )

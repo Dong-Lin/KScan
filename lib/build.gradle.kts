@@ -68,7 +68,7 @@ mavenPublishing {
     // or when publishing to https://s01.oss.sonatype.org
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     signAllPublications()
-    coordinates("io.github.ismai117", "KScan", "0.1.0-alpha04")
+    coordinates("io.github.ismai117", "KScan", "0.1.0-alpha05")
 
     pom {
         name.set(project.name)

@@ -26,7 +26,6 @@ import platform.AVFoundation.torchMode
 actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
-    onFrameOutside: () -> Unit,
     result: (BarcodeResult) -> Unit,
 ) {
     var torchEnabled by remember { mutableStateOf(false) }
@@ -68,7 +67,6 @@ actual fun ScannerView(
                 onBarcodeCanceled = {
                     result(BarcodeResult.OnCanceled)
                 },
-                onFrameOutside = onFrameOutside,
                 onMaxZoomRatioAvailable = { maxRatio ->
                     maxZoomRatio = maxRatio
                 },

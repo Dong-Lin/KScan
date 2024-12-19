@@ -22,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -34,7 +32,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
-    onFrameOutside: () -> Unit,
     result: (BarcodeResult) -> Unit,
 ) {
     val context = LocalContext.current
@@ -73,8 +70,6 @@ actual fun ScannerView(
         }
     }
 
-    val frame = LocalDensity.current.run { 280.dp.toPx() }
-
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -101,7 +96,6 @@ actual fun ScannerView(
                     ContextCompat.getMainExecutor(context),
                     BarcodeAnalyzer(
                         camera = camera,
-                        frame = frame,
                         codeTypes = codeTypes,
                         onSuccess = {
                             if (showBottomSheet) return@BarcodeAnalyzer
@@ -115,7 +109,6 @@ actual fun ScannerView(
                         },
                         onFailed = { result(BarcodeResult.OnFailed(Exception(it))) },
                         onCanceled = { result(BarcodeResult.OnCanceled) },
-                        onFrameOutside = onFrameOutside,
                     ).also { barcodeAnalyzer = it },
                 )
 
