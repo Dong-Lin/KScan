@@ -186,7 +186,7 @@ class CameraViewController(
                 barcodesConfirmed.add(
                     Barcode(
                         data = value,
-                        format = getBarcodeFormat(type),
+                        format = type.toFormat().toString(),
                     ),
                 )
             }
@@ -224,19 +224,19 @@ class CameraViewController(
         return codeTypes.contains(format)
     }
 
-    private fun getBarcodeFormat(type: AVMetadataObjectType): String =
-        when (type) {
-            AVMetadataObjectTypeQRCode -> "QR_CODE"
-            AVMetadataObjectTypeEAN13Code -> "EAN_13"
-            AVMetadataObjectTypeEAN8Code -> "EAN_8"
-            AVMetadataObjectTypeCode128Code -> "CODE_128"
-            AVMetadataObjectTypeCode39Code -> "CODE_39"
-            AVMetadataObjectTypeCode93Code -> "CODE_93"
-            AVMetadataObjectTypeUPCECode -> "UPC_E"
-            AVMetadataObjectTypePDF417Code -> "PDF417"
-            AVMetadataObjectTypeAztecCode -> "AZTEC"
-            AVMetadataObjectTypeDataMatrixCode -> "DATA_MATRIX"
-            else -> "UNKNOWN"
+    private fun AVMetadataObjectType.toFormat(): BarcodeFormat =
+        when (this) {
+            AVMetadataObjectTypeQRCode -> BarcodeFormats.FORMAT_QR_CODE
+            AVMetadataObjectTypeEAN13Code -> BarcodeFormats.FORMAT_EAN_13
+            AVMetadataObjectTypeEAN8Code -> BarcodeFormats.FORMAT_EAN_8
+            AVMetadataObjectTypeCode128Code -> BarcodeFormats.FORMAT_CODE_128
+            AVMetadataObjectTypeCode39Code -> BarcodeFormats.FORMAT_CODE_39
+            AVMetadataObjectTypeCode93Code -> BarcodeFormats.FORMAT_CODE_93
+            AVMetadataObjectTypeUPCECode -> BarcodeFormats.FORMAT_UPC_E
+            AVMetadataObjectTypePDF417Code -> BarcodeFormats.FORMAT_PDF417
+            AVMetadataObjectTypeAztecCode -> BarcodeFormats.FORMAT_AZTEC
+            AVMetadataObjectTypeDataMatrixCode -> BarcodeFormats.FORMAT_DATA_MATRIX
+            else -> BarcodeFormats.TYPE_UNKNOWN
         }
 
     fun setZoom(ratio: Float) {
