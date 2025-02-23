@@ -1,7 +1,7 @@
 rootProject.name = "KScan"
 
 include(":sample:androidApp")
-include(":lib")
+include(":kscan")
 include(":sample:desktopApp")
 include(":sample:shared")
 

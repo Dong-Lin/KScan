@@ -32,7 +32,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            api(project(":lib"))
+            api(project(":kscan"))
         }
         androidMain.dependencies {
             implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")

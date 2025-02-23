@@ -46,6 +46,7 @@ fun App() {
                     codeTypes =
                         listOf(
                             BarcodeFormat.FORMAT_ALL_FORMATS,
+                            BarcodeFormat.TYPE_GEO,
                         ),
                 ) { result ->
                     when (result) {
