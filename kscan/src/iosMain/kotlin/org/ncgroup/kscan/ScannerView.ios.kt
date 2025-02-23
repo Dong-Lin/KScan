@@ -14,9 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitViewController
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFoundation.AVCaptureDevice
+import platform.AVFoundation.AVCaptureDevicePositionBack
+import platform.AVFoundation.AVCaptureDeviceTypeBuiltInWideAngleCamera
 import platform.AVFoundation.AVCaptureTorchModeOff
 import platform.AVFoundation.AVCaptureTorchModeOn
 import platform.AVFoundation.AVMediaTypeVideo
+import platform.AVFoundation.defaultDeviceWithDeviceType
 import platform.AVFoundation.hasTorch
 import platform.AVFoundation.torchMode
 
@@ -38,7 +41,11 @@ actual fun ScannerView(
     var cameraViewController by remember { mutableStateOf<CameraViewController?>(null) }
     var captureDevice: AVCaptureDevice? =
         remember {
-            AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+            AVCaptureDevice.defaultDeviceWithDeviceType(
+                AVCaptureDeviceTypeBuiltInWideAngleCamera,
+                AVMediaTypeVideo,
+                AVCaptureDevicePositionBack,
+            )
         }
 
     if (captureDevice == null && cameraViewController == null) return

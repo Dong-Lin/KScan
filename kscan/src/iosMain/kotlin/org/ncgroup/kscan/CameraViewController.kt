@@ -132,19 +132,6 @@ class CameraViewController(
         previewLayer.frame = view.layer.bounds
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         view.layer.addSublayer(previewLayer)
-
-        updateScanFrame()
-    }
-
-    private fun updateScanFrame() {
-        if (::captureSession.isInitialized) {
-            val metadataOutput = captureSession.outputs.firstOrNull() as? AVCaptureMetadataOutput
-            metadataOutput?.rectOfInterest?.let {
-                previewLayer.metadataOutputRectOfInterestForRect(
-                    it,
-                )
-            }
-        }
     }
 
     override fun viewWillAppear(animated: Boolean) {
@@ -164,7 +151,6 @@ class CameraViewController(
     override fun viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer.frame = view.layer.bounds
-        updateScanFrame()
     }
 
     override fun captureOutput(

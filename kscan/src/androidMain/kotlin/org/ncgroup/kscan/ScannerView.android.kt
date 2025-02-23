@@ -67,7 +67,6 @@ actual fun ScannerView(
         camera?.cameraInfo?.zoomState?.observe(lifecycleOwner) {
             zoomRatio = it.zoomRatio
             maxZoomRatio = it.maxZoomRatio
-            println("zoom: $zoomRatio")
         }
     }
 
