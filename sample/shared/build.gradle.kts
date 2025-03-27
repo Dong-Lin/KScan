@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -20,6 +22,9 @@ kotlin {
             isStatic = true
         }
     }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs()
 
     sourceSets {
         val desktopMain by getting

@@ -4,6 +4,7 @@ include(":sample:androidApp")
 include(":kscan")
 include(":sample:desktopApp")
 include(":sample:shared")
+include(":sample:webApp")
 
 pluginManagement {
     repositories {
