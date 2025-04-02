@@ -110,3 +110,31 @@ if (showScanner) {
     }
 }
 ```
+
+If you want to remove the UI and just use the raw scanner, you can set the showUi parameter to false
+
+```Kotlin
+if (showScanner) {
+    ScannerView(
+        codeTypes = listOf(
+            BarcodeFormats.FORMAT_ALL_FORMATS,
+            BarcodeFormats.TYPE_GEO,
+        ),
+        showUi = false
+    ) { result ->
+        when (result) {
+            is BarcodeResult.OnSuccess -> {
+                println("Barcode: ${result.barcode.data}, format: ${result.barcode.format}")
+                showScanner = false
+            }
+            is BarcodeResult.OnFailed -> {
+                println("Error: ${result.exception.message}")
+                showScanner = false
+            }
+            BarcodeResult.OnCanceled -> {
+                showScanner = false
+            }
+        }
+    }
+}
+```
