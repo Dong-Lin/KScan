@@ -30,8 +30,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun ScannerView(
+    modifier: Modifier,
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
+    showUi: Boolean,
     result: (BarcodeResult) -> Unit,
 ) {
     val context = LocalContext.current
@@ -71,7 +73,7 @@ actual fun ScannerView(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
     ) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -130,32 +132,34 @@ actual fun ScannerView(
             },
         )
 
-        ScannerUI(
-            onCancel = { result(BarcodeResult.OnCanceled) },
-            torchEnabled = torchEnabled,
-            onTorchEnabled = { cameraControl?.enableTorch(it) },
-            zoomRatio = zoomRatio,
-            zoomRatioOnChange = { ratio ->
-                cameraControl?.setZoomRatio(ratio)
-            },
-            maxZoomRatio = maxZoomRatio,
-            colors = colors,
-        )
-
-        if (showBottomSheet) {
-            ScannerBarcodeSelectionBottomSheet(
-                barcodes = barcodes.toList(),
-                sheetState = sheetState,
-                onDismissRequest = {
-                    showBottomSheet = false
-                    barcodes.clear()
+        if(showUi) {
+            ScannerUI(
+                onCancel = { result(BarcodeResult.OnCanceled) },
+                torchEnabled = torchEnabled,
+                onTorchEnabled = { cameraControl?.enableTorch(it) },
+                zoomRatio = zoomRatio,
+                zoomRatioOnChange = { ratio ->
+                    cameraControl?.setZoomRatio(ratio)
                 },
-                result = {
-                    result(it)
-                    showBottomSheet = false
-                    barcodes.clear()
-                },
+                maxZoomRatio = maxZoomRatio,
+                colors = colors,
             )
+
+            if (showBottomSheet) {
+                ScannerBarcodeSelectionBottomSheet(
+                    barcodes = barcodes.toList(),
+                    sheetState = sheetState,
+                    onDismissRequest = {
+                        showBottomSheet = false
+                        barcodes.clear()
+                    },
+                    result = {
+                        result(it)
+                        showBottomSheet = false
+                        barcodes.clear()
+                    },
+                )
+            }
         }
     }
 

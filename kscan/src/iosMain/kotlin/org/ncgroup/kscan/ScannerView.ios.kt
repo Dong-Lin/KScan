@@ -26,8 +26,10 @@ import platform.AVFoundation.torchMode
 @OptIn(ExperimentalForeignApi::class, ExperimentalMaterial3Api::class)
 @Composable
 actual fun ScannerView(
+    modifier: Modifier,
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
+    showUi: Boolean,
     result: (BarcodeResult) -> Unit,
 ) {
     var torchEnabled by remember { mutableStateOf(false) }
@@ -77,53 +79,55 @@ actual fun ScannerView(
             )
         }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         UIKitViewController(
             factory = { cameraViewController!! },
             modifier = Modifier.fillMaxSize(),
         )
 
-        ScannerUI(
-            onCancel = { result(BarcodeResult.OnCanceled) },
-            torchEnabled = torchEnabled,
-            onTorchEnabled = { enabled ->
-                runCatching {
-                    if (captureDevice!!.hasTorch) {
-                        captureDevice!!.lockForConfiguration(null)
-                        captureDevice!!.torchMode =
-                            if (enabled) {
-                                AVCaptureTorchModeOn
-                            } else {
-                                AVCaptureTorchModeOff
-                            }
-                        captureDevice!!.unlockForConfiguration()
-                        torchEnabled = enabled
+        if(showUi) {
+            ScannerUI(
+                onCancel = { result(BarcodeResult.OnCanceled) },
+                torchEnabled = torchEnabled,
+                onTorchEnabled = { enabled ->
+                    runCatching {
+                        if (captureDevice!!.hasTorch) {
+                            captureDevice!!.lockForConfiguration(null)
+                            captureDevice!!.torchMode =
+                                if (enabled) {
+                                    AVCaptureTorchModeOn
+                                } else {
+                                    AVCaptureTorchModeOff
+                                }
+                            captureDevice!!.unlockForConfiguration()
+                            torchEnabled = enabled
+                        }
                     }
-                }
-            },
-            zoomRatio = zoomRatio,
-            zoomRatioOnChange = { ratio ->
-                cameraViewController!!.setZoom(ratio)
-                zoomRatio = ratio
-            },
-            maxZoomRatio = maxZoomRatio,
-            colors = colors,
-        )
-
-        if (showBottomSheet) {
-            ScannerBarcodeSelectionBottomSheet(
-                barcodes = barcodes.toList(),
-                sheetState = sheetState,
-                onDismissRequest = {
-                    showBottomSheet = false
-                    barcodes.clear()
                 },
-                result = {
-                    result(it)
-                    showBottomSheet = false
-                    barcodes.clear()
+                zoomRatio = zoomRatio,
+                zoomRatioOnChange = { ratio ->
+                    cameraViewController!!.setZoom(ratio)
+                    zoomRatio = ratio
                 },
+                maxZoomRatio = maxZoomRatio,
+                colors = colors,
             )
+
+            if (showBottomSheet) {
+                ScannerBarcodeSelectionBottomSheet(
+                    barcodes = barcodes.toList(),
+                    sheetState = sheetState,
+                    onDismissRequest = {
+                        showBottomSheet = false
+                        barcodes.clear()
+                    },
+                    result = {
+                        result(it)
+                        showBottomSheet = false
+                        barcodes.clear()
+                    },
+                )
+            }
         }
 
         DisposableEffect(Unit) {
