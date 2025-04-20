@@ -24,7 +24,7 @@ class BarcodeAnalyzer(
                     com.google.mlkit.vision.barcode.common.Barcode.FORMAT_ALL_FORMATS
                 } else {
                     codeTypes
-                        .filter { it.toString().startsWith("FORMAT_") }
+                        .filter { it.name.startsWith("FORMAT_") && it != BarcodeFormat.FORMAT_ALL_FORMATS }
                         .map { it.toMLKitFormat() }
                         .fold(0) { acc, format -> acc or format }
                 },
@@ -50,10 +50,15 @@ class BarcodeAnalyzer(
 
     private val scanner = BarcodeScanning.getClient(options)
     private val barcodesDetected = mutableMapOf<String, Int>()
-    private val barcodesConfirmed = mutableSetOf<Barcode>()
+    private var hasDetectedBarcode = false
 
     @androidx.annotation.OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
+        if (hasDetectedBarcode) {
+            imageProxy.close()
+            return
+        }
+
         val mediaImage =
             imageProxy.image ?: run {
                 imageProxy.close()
@@ -79,18 +84,12 @@ class BarcodeAnalyzer(
     }
 
     private fun processBarcodes(barcodes: List<com.google.mlkit.vision.barcode.common.Barcode>) {
-        barcodes.forEach { barcode ->
+        for (barcode in barcodes) {
             if (!isRequestedFormat(barcode)) {
                 Log.d("barcode_flow", "Format check failed")
-                return@forEach
+                continue
             }
             processDetectedBarcode(barcode.displayValue.orEmpty(), barcode)
-        }
-        val confirmedBarcodes = barcodesConfirmed.toList()
-        if (confirmedBarcodes.isNotEmpty()) {
-            onSuccess(confirmedBarcodes)
-            barcodesDetected.clear()
-            barcodesConfirmed.clear()
         }
     }
 
@@ -100,21 +99,20 @@ class BarcodeAnalyzer(
     ) {
         barcodesDetected[displayValue] = (barcodesDetected[displayValue] ?: 0) + 1
         if (requireNotNull(barcodesDetected[displayValue]) >= 2) {
-            if (!barcodesConfirmed.any { it.data == displayValue }) {
-                barcodesConfirmed.add(
-                    Barcode(
-                        data = displayValue,
-                        format = barcode.toFormat().toString(),
-                    ),
+            val detectedBarcode =
+                Barcode(
+                    data = displayValue,
+                    format = barcode.toFormat().toString(),
                 )
-            }
+            onSuccess(listOf(detectedBarcode))
+            barcodesDetected.clear()
+            hasDetectedBarcode = true
         }
     }
 
     private fun isRequestedFormat(barcode: com.google.mlkit.vision.barcode.common.Barcode): Boolean {
         return codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS) ||
-            codeTypes.contains(barcode.toFormat()) ||
-            codeTypes.contains(barcode.toType())
+            codeTypes.contains(barcode.toFormat())
     }
 }
 
@@ -152,23 +150,5 @@ private fun com.google.mlkit.vision.barcode.common.Barcode.toFormat(): BarcodeFo
         com.google.mlkit.vision.barcode.common.Barcode.FORMAT_PDF417 -> BarcodeFormat.FORMAT_PDF417
         com.google.mlkit.vision.barcode.common.Barcode.FORMAT_AZTEC -> BarcodeFormat.FORMAT_AZTEC
         com.google.mlkit.vision.barcode.common.Barcode.FORMAT_UNKNOWN -> BarcodeFormat.TYPE_UNKNOWN
-        else -> BarcodeFormat.TYPE_UNKNOWN
-    }
-
-private fun com.google.mlkit.vision.barcode.common.Barcode.toType(): BarcodeFormat =
-    when (valueType) {
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_CONTACT_INFO -> BarcodeFormat.TYPE_CONTACT_INFO
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_EMAIL -> BarcodeFormat.TYPE_EMAIL
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_ISBN -> BarcodeFormat.TYPE_ISBN
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_PHONE -> BarcodeFormat.TYPE_PHONE
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_PRODUCT -> BarcodeFormat.TYPE_PRODUCT
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_SMS -> BarcodeFormat.TYPE_SMS
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_TEXT -> BarcodeFormat.TYPE_TEXT
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_URL -> BarcodeFormat.TYPE_URL
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_WIFI -> BarcodeFormat.TYPE_WIFI
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_GEO -> BarcodeFormat.TYPE_GEO
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_CALENDAR_EVENT -> BarcodeFormat.TYPE_CALENDAR_EVENT
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_DRIVER_LICENSE -> BarcodeFormat.TYPE_DRIVER_LICENSE
-        com.google.mlkit.vision.barcode.common.Barcode.TYPE_UNKNOWN -> BarcodeFormat.TYPE_UNKNOWN
         else -> BarcodeFormat.TYPE_UNKNOWN
     }
