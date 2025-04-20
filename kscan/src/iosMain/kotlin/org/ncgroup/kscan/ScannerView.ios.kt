@@ -2,8 +2,6 @@ package org.ncgroup.kscan
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +21,7 @@ import platform.AVFoundation.defaultDeviceWithDeviceType
 import platform.AVFoundation.hasTorch
 import platform.AVFoundation.torchMode
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun ScannerView(
     modifier: Modifier,
@@ -35,10 +33,6 @@ actual fun ScannerView(
     var torchEnabled by remember { mutableStateOf(false) }
     var zoomRatio by remember { mutableStateOf(1f) }
     var maxZoomRatio by remember { mutableStateOf(1f) }
-    val barcodes = remember { mutableSetOf<Barcode>() }
-    var showBottomSheet by remember { mutableStateOf(false) }
-
-    val sheetState = rememberModalBottomSheetState()
 
     var cameraViewController by remember { mutableStateOf<CameraViewController?>(null) }
     var captureDevice: AVCaptureDevice? =
@@ -58,14 +52,7 @@ actual fun ScannerView(
                 device = captureDevice!!,
                 codeTypes = codeTypes,
                 onBarcodeSuccess = { scannedBarcodes ->
-                    if (showBottomSheet) return@CameraViewController
-                    if (scannedBarcodes.count() == 1) {
-                        result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
-                        barcodes.clear()
-                    } else if (scannedBarcodes.count() > 1) {
-                        barcodes.addAll(scannedBarcodes)
-                        showBottomSheet = true
-                    }
+                    result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
                 },
                 onBarcodeFailed = { error ->
                     result(BarcodeResult.OnFailed(error))
@@ -85,7 +72,7 @@ actual fun ScannerView(
             modifier = Modifier.fillMaxSize(),
         )
 
-        if(showUi) {
+        if (showUi) {
             ScannerUI(
                 onCancel = { result(BarcodeResult.OnCanceled) },
                 torchEnabled = torchEnabled,
@@ -112,22 +99,6 @@ actual fun ScannerView(
                 maxZoomRatio = maxZoomRatio,
                 colors = colors,
             )
-
-            if (showBottomSheet) {
-                ScannerBarcodeSelectionBottomSheet(
-                    barcodes = barcodes.toList(),
-                    sheetState = sheetState,
-                    onDismissRequest = {
-                        showBottomSheet = false
-                        barcodes.clear()
-                    },
-                    result = {
-                        result(it)
-                        showBottomSheet = false
-                        barcodes.clear()
-                    },
-                )
-            }
         }
 
         DisposableEffect(Unit) {

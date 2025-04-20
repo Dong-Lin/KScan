@@ -41,7 +41,6 @@ class CameraViewController(
     private lateinit var videoInput: AVCaptureDeviceInput
 
     private val barcodesDetected = mutableMapOf<String, Int>()
-    private val barcodesConfirmed = mutableSetOf<Barcode>()
 
     override fun viewDidLoad() {
         super.viewDidLoad()
@@ -172,7 +171,6 @@ class CameraViewController(
             val stringValue = barcodeObject.stringValue ?: continue
             processDetectedBarcode(stringValue, barcodeObject.type)
         }
-        checkConfirmedBarcodes()
     }
 
     private fun processDetectedBarcode(
@@ -182,23 +180,13 @@ class CameraViewController(
         barcodesDetected[value] = (barcodesDetected[value] ?: 0) + 1
 
         if ((barcodesDetected[value] ?: 0) >= 2) {
-            if (!barcodesConfirmed.any { it.data == value }) {
-                barcodesConfirmed.add(
-                    Barcode(
-                        data = value,
-                        format = type.toFormat().toString(),
-                    ),
+            val barcode =
+                Barcode(
+                    data = value,
+                    format = type.toFormat().toString(),
                 )
-            }
-        }
-    }
-
-    private fun checkConfirmedBarcodes() {
-        val confirmedBarcodes = barcodesConfirmed.toList()
-        if (confirmedBarcodes.isNotEmpty()) {
-            onBarcodeSuccess(confirmedBarcodes)
+            onBarcodeSuccess(listOf(barcode))
             barcodesDetected.clear()
-            barcodesConfirmed.clear()
             captureSession.stopRunning()
         }
     }
@@ -226,17 +214,17 @@ class CameraViewController(
 
     private fun AVMetadataObjectType.toFormat(): BarcodeFormat =
         when (this) {
-            AVMetadataObjectTypeQRCode -> BarcodeFormats.FORMAT_QR_CODE
-            AVMetadataObjectTypeEAN13Code -> BarcodeFormats.FORMAT_EAN_13
-            AVMetadataObjectTypeEAN8Code -> BarcodeFormats.FORMAT_EAN_8
-            AVMetadataObjectTypeCode128Code -> BarcodeFormats.FORMAT_CODE_128
-            AVMetadataObjectTypeCode39Code -> BarcodeFormats.FORMAT_CODE_39
-            AVMetadataObjectTypeCode93Code -> BarcodeFormats.FORMAT_CODE_93
-            AVMetadataObjectTypeUPCECode -> BarcodeFormats.FORMAT_UPC_E
-            AVMetadataObjectTypePDF417Code -> BarcodeFormats.FORMAT_PDF417
-            AVMetadataObjectTypeAztecCode -> BarcodeFormats.FORMAT_AZTEC
-            AVMetadataObjectTypeDataMatrixCode -> BarcodeFormats.FORMAT_DATA_MATRIX
-            else -> BarcodeFormats.TYPE_UNKNOWN
+            AVMetadataObjectTypeQRCode -> BarcodeFormat.FORMAT_QR_CODE
+            AVMetadataObjectTypeEAN13Code -> BarcodeFormat.FORMAT_EAN_13
+            AVMetadataObjectTypeEAN8Code -> BarcodeFormat.FORMAT_EAN_8
+            AVMetadataObjectTypeCode128Code -> BarcodeFormat.FORMAT_CODE_128
+            AVMetadataObjectTypeCode39Code -> BarcodeFormat.FORMAT_CODE_39
+            AVMetadataObjectTypeCode93Code -> BarcodeFormat.FORMAT_CODE_93
+            AVMetadataObjectTypeUPCECode -> BarcodeFormat.FORMAT_UPC_E
+            AVMetadataObjectTypePDF417Code -> BarcodeFormat.FORMAT_PDF417
+            AVMetadataObjectTypeAztecCode -> BarcodeFormat.FORMAT_AZTEC
+            AVMetadataObjectTypeDataMatrixCode -> BarcodeFormat.FORMAT_DATA_MATRIX
+            else -> BarcodeFormat.TYPE_UNKNOWN
         }
 
     fun setZoom(ratio: Float) {

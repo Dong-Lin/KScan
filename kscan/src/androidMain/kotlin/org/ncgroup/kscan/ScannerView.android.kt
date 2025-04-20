@@ -11,8 +11,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun ScannerView(
     modifier: Modifier,
@@ -38,8 +35,6 @@ actual fun ScannerView(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
-    var barcodeAnalyzer by remember { mutableStateOf<BarcodeAnalyzer?>(null) }
 
     val cameraProviderFuture =
         remember {
@@ -53,11 +48,6 @@ actual fun ScannerView(
     var torchEnabled by remember { mutableStateOf(false) }
     var zoomRatio by remember { mutableStateOf(1f) }
     var maxZoomRatio by remember { mutableStateOf(1f) }
-
-    val barcodes = remember { mutableSetOf<Barcode>() }
-    var showBottomSheet by remember { mutableStateOf(false) }
-
-    val sheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(Unit) {
         camera?.cameraInfo?.torchState?.observe(lifecycleOwner) {
@@ -86,7 +76,7 @@ actual fun ScannerView(
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                         .build()
 
-                preview.setSurfaceProvider(previewView.surfaceProvider)
+                preview.surfaceProvider = previewView.surfaceProvider
 
                 val imageAnalysis =
                     ImageAnalysis.Builder()
@@ -99,19 +89,13 @@ actual fun ScannerView(
                     BarcodeAnalyzer(
                         camera = camera,
                         codeTypes = codeTypes,
-                        onSuccess = {
-                            if (showBottomSheet) return@BarcodeAnalyzer
-                            if (it.count() == 1) {
-                                result(BarcodeResult.OnSuccess(it.first()))
-                                barcodes.clear()
-                            } else if (it.count() > 1) {
-                                barcodes.addAll(it)
-                                showBottomSheet = true
-                            }
+                        onSuccess = { scannedBarcodes ->
+                            result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
+                            cameraProviderFuture.unbind(imageAnalysis)
                         },
                         onFailed = { result(BarcodeResult.OnFailed(Exception(it))) },
                         onCanceled = { result(BarcodeResult.OnCanceled) },
-                    ).also { barcodeAnalyzer = it },
+                    ),
                 )
 
                 camera =
@@ -132,7 +116,7 @@ actual fun ScannerView(
             },
         )
 
-        if(showUi) {
+        if (showUi) {
             ScannerUI(
                 onCancel = { result(BarcodeResult.OnCanceled) },
                 torchEnabled = torchEnabled,
@@ -144,30 +128,14 @@ actual fun ScannerView(
                 maxZoomRatio = maxZoomRatio,
                 colors = colors,
             )
-
-            if (showBottomSheet) {
-                ScannerBarcodeSelectionBottomSheet(
-                    barcodes = barcodes.toList(),
-                    sheetState = sheetState,
-                    onDismissRequest = {
-                        showBottomSheet = false
-                        barcodes.clear()
-                    },
-                    result = {
-                        result(it)
-                        showBottomSheet = false
-                        barcodes.clear()
-                    },
-                )
-            }
         }
     }
 
     DisposableEffect(Unit) {
         onDispose {
+            cameraProviderFuture.unbindAll()
             camera = null
             cameraControl = null
-            barcodeAnalyzer = null
         }
     }
 }
