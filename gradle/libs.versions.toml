@@ -14,7 +14,6 @@ klint = "12.2.0"
 maven-publish = "0.29.0"
 mlkitBarcodeScanning-android = "17.3.0"
 androidx-camera = "1.4.2"
-constraintlayout-compose = "0.5.0-shaded"
 moko = "0.18.1"
 
 [libraries]
@@ -31,8 +30,6 @@ androidx-camera-core = { group = "androidx.camera", name = "camera-core", versio
 androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "androidx-camera" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidx-camera" }
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "androidx-camera" }
-
-constraintLayout-compose = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintlayout-compose" }
 
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }

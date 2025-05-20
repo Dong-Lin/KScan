@@ -1,13 +1,16 @@
 package org.ncgroup.kscan
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tech.annexflow.constraintlayout.compose.ConstraintLayout
 
 @Composable
-internal fun ScannerUI(
+fun ScannerUI(
     onCancel: () -> Unit,
     torchEnabled: Boolean,
     onTorchEnabled: (Boolean) -> Unit,
@@ -16,18 +19,11 @@ internal fun ScannerUI(
     maxZoomRatio: Float,
     colors: ScannerColors = scannerColors(),
 ) {
-    ConstraintLayout(
+    Column(
         modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val (topBar, frame, zoomController) = createRefs()
-
         ScannerHeader(
-            modifier =
-                Modifier.constrainAs(topBar) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
             onCancel = onCancel,
             torchEnabled = torchEnabled,
             onTorchEnabled = onTorchEnabled,
@@ -37,25 +33,16 @@ internal fun ScannerUI(
             actionIconColor = colors.headerActionIconColor,
         )
 
+        Spacer(modifier = Modifier.weight(1f))
+
         ScannerBarcodeFrame(
-            modifier =
-                Modifier.constrainAs(frame) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                },
             frameColor = colors.barcodeFrameColor,
         )
 
+        Spacer(modifier = Modifier.weight(1f))
+
         ScannerZoomAdjuster(
-            modifier =
-                Modifier.constrainAs(zoomController) {
-                    top.linkTo(frame.bottom, margin = 30.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                },
+            modifier = Modifier.padding(bottom = 30.dp),
             zoomRatio = zoomRatio,
             zoomRatioOnChange = zoomRatioOnChange,
             maxZoomRatio = maxZoomRatio,

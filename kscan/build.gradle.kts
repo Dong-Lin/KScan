@@ -41,7 +41,6 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
-            implementation(libs.constraintLayout.compose)
         }
     }
 }
@@ -72,7 +71,7 @@ mavenPublishing {
     // or when publishing to https://s01.oss.sonatype.org
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     signAllPublications()
-    coordinates("io.github.ismai117", "KScan", "0.1.0-beta06")
+    coordinates("io.github.ismai117", "KScan", "0.1.0-beta07")
 
     pom {
         name.set(project.name)
