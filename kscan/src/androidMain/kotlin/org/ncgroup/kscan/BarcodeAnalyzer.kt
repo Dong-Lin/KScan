@@ -30,21 +30,17 @@ class BarcodeAnalyzer(
                 },
             )
             .setZoomSuggestionOptions(
-                ZoomSuggestionOptions.Builder(
-                    object : ZoomSuggestionOptions.ZoomCallback {
-                        override fun setZoom(zoomRatio: Float): Boolean {
-                            val maxZoomRatio =
-                                (camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1.0f)
-                                    .coerceAtMost(5.0f)
-                            return if (zoomRatio <= maxZoomRatio) {
-                                camera?.cameraControl?.setZoomRatio(zoomRatio)
-                                true
-                            } else {
-                                false
-                            }
-                        }
-                    },
-                ).setMaxSupportedZoomRatio(5.0f).build(),
+                ZoomSuggestionOptions.Builder { zoomRatio ->
+                    val maxZoomRatio =
+                        (camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1.0f)
+                            .coerceAtMost(5.0f)
+                    if (zoomRatio <= maxZoomRatio) {
+                        camera?.cameraControl?.setZoomRatio(zoomRatio)
+                        true
+                    } else {
+                        false
+                    }
+                }.setMaxSupportedZoomRatio(5.0f).build(),
             )
             .build()
 

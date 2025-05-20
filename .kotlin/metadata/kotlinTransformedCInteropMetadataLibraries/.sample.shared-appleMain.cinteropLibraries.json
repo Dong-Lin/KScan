@@ -5,8 +5,8 @@
     "sourceSetName": "nativeMain"
   },
   {
-    "moduleId": "org.jetbrains.compose.ui:ui-uikit:1.8.0-beta02",
-    "file": "/Users/ismail/AndroidStudioProjects/KScan/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/org.jetbrains.compose.ui-ui-uikit-1.8.0-beta02-uikitMain-cinterop/org.jetbrains.compose.ui_ui-uikit-cinterop-utils-4fLReg.klib",
+    "moduleId": "org.jetbrains.compose.ui:ui-uikit:1.8.1",
+    "file": "/Users/ismail/AndroidStudioProjects/KScan/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/org.jetbrains.compose.ui-ui-uikit-1.8.1-uikitMain-cinterop/org.jetbrains.compose.ui_ui-uikit-cinterop-utils-oOVhOA.klib",
     "sourceSetName": "uikitMain"
   }
 ]
