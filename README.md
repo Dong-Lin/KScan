@@ -1,6 +1,4 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Multiplatform project](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/build.yml/badge.svg)](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/build.yml)
-[![Publish Wiki](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/wiki.yml/badge.svg)](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/wiki.yml)
 [![Latest release](https://img.shields.io/github/v/release/ismai117/KScan?color=brightgreen&label=latest%20release)](https://github.com/ismai117/KScan/releases/latest)
 [![Latest build](https://img.shields.io/github/v/release/ismai117/KScan?color=orange&include_prereleases&label=latest%20build)](https://github.com/ismai117/KScan/releases)
 <br>
@@ -14,6 +12,9 @@ Compose Multiplatform Barcode Scanning Library
 <p align="center">
   <img alt="Platform Android" src="https://img.shields.io/badge/Platform-Android-brightgreen"/>
   <img alt="Platform iOS" src="https://img.shields.io/badge/Platform-iOS-lightgray"/>
+  <img alt="Platform JVM" src="https://img.shields.io/badge/Platform-JVM-orange"/>
+  <img alt="Platform Js" src="https://img.shields.io/badge/Platform-Js-yellow"/>
+  <img alt="Platform Js" src="https://img.shields.io/badge/Platform-Wasm-purple"/>
 </p>
 
 <br>
