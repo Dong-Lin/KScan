@@ -41,7 +41,7 @@ Add the dependency in your common module's commonMain source set
 <br>
 
 ```Kotlin
-implementation("io.github.ismai117:KScan:0.1.0-beta05")
+implementation("io.github.ismai117:KScan:0.1.0-beta06")
 ```
 
 <br>
@@ -118,8 +118,8 @@ If you want to remove the UI and just use the raw scanner, you can set the showU
 if (showScanner) {
     ScannerView(
         codeTypes = listOf(
-            BarcodeFormats.FORMAT_ALL_FORMATS,
-            BarcodeFormats.TYPE_GEO,
+            BarcodeFormats.FORMAT_QR_CODE,
+            BarcodeFormats.FORMAT_EAN_13,
         ),
         showUi = false
     ) { result ->
