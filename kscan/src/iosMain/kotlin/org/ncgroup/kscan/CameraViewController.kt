@@ -27,7 +27,6 @@ import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
 import platform.darwin.dispatch_get_main_queue
 
-@OptIn(ExperimentalForeignApi::class)
 class CameraViewController(
     private val device: AVCaptureDevice,
     private val codeTypes: List<BarcodeFormat>,
@@ -49,6 +48,7 @@ class CameraViewController(
         onMaxZoomRatioAvailable(device.activeFormat.videoMaxZoomFactor.toFloat().coerceAtMost(5.0f))
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     private fun setupCamera() {
         captureSession = AVCaptureSession()
 
@@ -82,39 +82,6 @@ class CameraViewController(
         captureSession.startRunning()
     }
 
-    private fun getMetadataObjectTypes(): List<AVMetadataObjectType> {
-        if (codeTypes.isEmpty() || codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) {
-            return listOf(
-                AVMetadataObjectTypeQRCode,
-                AVMetadataObjectTypeEAN13Code,
-                AVMetadataObjectTypeEAN8Code,
-                AVMetadataObjectTypeCode128Code,
-                AVMetadataObjectTypeCode39Code,
-                AVMetadataObjectTypeCode93Code,
-                AVMetadataObjectTypeUPCECode,
-                AVMetadataObjectTypePDF417Code,
-                AVMetadataObjectTypeAztecCode,
-                AVMetadataObjectTypeDataMatrixCode,
-            )
-        }
-
-        return codeTypes.mapNotNull { format ->
-            when (format) {
-                BarcodeFormat.FORMAT_QR_CODE -> AVMetadataObjectTypeQRCode
-                BarcodeFormat.FORMAT_EAN_13 -> AVMetadataObjectTypeEAN13Code
-                BarcodeFormat.FORMAT_EAN_8 -> AVMetadataObjectTypeEAN8Code
-                BarcodeFormat.FORMAT_CODE_128 -> AVMetadataObjectTypeCode128Code
-                BarcodeFormat.FORMAT_CODE_39 -> AVMetadataObjectTypeCode39Code
-                BarcodeFormat.FORMAT_CODE_93 -> AVMetadataObjectTypeCode93Code
-                BarcodeFormat.FORMAT_UPC_E -> AVMetadataObjectTypeUPCECode
-                BarcodeFormat.FORMAT_PDF417 -> AVMetadataObjectTypePDF417Code
-                BarcodeFormat.FORMAT_AZTEC -> AVMetadataObjectTypeAztecCode
-                BarcodeFormat.FORMAT_DATA_MATRIX -> AVMetadataObjectTypeDataMatrixCode
-                else -> null
-            }
-        }
-    }
-
     private fun setupMetadataOutput(metadataOutput: AVCaptureMetadataOutput) {
         metadataOutput.setMetadataObjectsDelegate(this, dispatch_get_main_queue())
 
@@ -126,6 +93,7 @@ class CameraViewController(
         metadataOutput.metadataObjectTypes = supportedTypes
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     private fun setupPreviewLayer() {
         previewLayer = AVCaptureVideoPreviewLayer.layerWithSession(captureSession)
         previewLayer.frame = view.layer.bounds
@@ -147,6 +115,7 @@ class CameraViewController(
         }
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer.frame = view.layer.bounds
@@ -161,16 +130,18 @@ class CameraViewController(
     }
 
     private fun processBarcodes(metadataObjects: List<*>) {
-        for (metadataObject in metadataObjects) {
-            if (metadataObject !is AVMetadataMachineReadableCodeObject) continue
-            val barcodeObject =
+        metadataObjects
+            .filterIsInstance<AVMetadataMachineReadableCodeObject>()
+            .mapNotNull { metadataObject ->
+                if (!::previewLayer.isInitialized) return@mapNotNull null
                 previewLayer.transformedMetadataObjectForMetadataObject(metadataObject)
-                    as? AVMetadataMachineReadableCodeObject ?: continue
-
-            if (!isRequestedFormat(barcodeObject.type)) continue
-            val stringValue = barcodeObject.stringValue ?: continue
-            processDetectedBarcode(stringValue, barcodeObject.type)
-        }
+                        as? AVMetadataMachineReadableCodeObject
+            }
+            .filter { barcodeObject ->
+                isRequestedFormat(barcodeObject.type) // Uses the cleaner version
+            }.forEach { barcodeObject ->
+                processDetectedBarcode(barcodeObject.stringValue ?: "", barcodeObject.type)
+            }
     }
 
     private fun processDetectedBarcode(
@@ -180,53 +151,21 @@ class CameraViewController(
         barcodesDetected[value] = (barcodesDetected[value] ?: 0) + 1
 
         if ((barcodesDetected[value] ?: 0) >= 2) {
+            val appSpecificFormat = type.toFormat()
             val barcode =
                 Barcode(
                     data = value,
-                    format = type.toFormat().toString(),
+                    format = appSpecificFormat.toString(),
                 )
             onBarcodeSuccess(listOf(barcode))
             barcodesDetected.clear()
-            captureSession.stopRunning()
-        }
-    }
-
-    private fun isRequestedFormat(type: AVMetadataObjectType): Boolean {
-        if (codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) return true
-
-        val format =
-            when (type) {
-                AVMetadataObjectTypeQRCode -> BarcodeFormat.FORMAT_QR_CODE
-                AVMetadataObjectTypeEAN13Code -> BarcodeFormat.FORMAT_EAN_13
-                AVMetadataObjectTypeEAN8Code -> BarcodeFormat.FORMAT_EAN_8
-                AVMetadataObjectTypeCode128Code -> BarcodeFormat.FORMAT_CODE_128
-                AVMetadataObjectTypeCode39Code -> BarcodeFormat.FORMAT_CODE_39
-                AVMetadataObjectTypeCode93Code -> BarcodeFormat.FORMAT_CODE_93
-                AVMetadataObjectTypeUPCECode -> BarcodeFormat.FORMAT_UPC_E
-                AVMetadataObjectTypePDF417Code -> BarcodeFormat.FORMAT_PDF417
-                AVMetadataObjectTypeAztecCode -> BarcodeFormat.FORMAT_AZTEC
-                AVMetadataObjectTypeDataMatrixCode -> BarcodeFormat.FORMAT_DATA_MATRIX
-                else -> return false
+            if(::captureSession.isInitialized && captureSession.isRunning()) {
+                captureSession.stopRunning()
             }
-
-        return codeTypes.contains(format)
+        }
     }
 
-    private fun AVMetadataObjectType.toFormat(): BarcodeFormat =
-        when (this) {
-            AVMetadataObjectTypeQRCode -> BarcodeFormat.FORMAT_QR_CODE
-            AVMetadataObjectTypeEAN13Code -> BarcodeFormat.FORMAT_EAN_13
-            AVMetadataObjectTypeEAN8Code -> BarcodeFormat.FORMAT_EAN_8
-            AVMetadataObjectTypeCode128Code -> BarcodeFormat.FORMAT_CODE_128
-            AVMetadataObjectTypeCode39Code -> BarcodeFormat.FORMAT_CODE_39
-            AVMetadataObjectTypeCode93Code -> BarcodeFormat.FORMAT_CODE_93
-            AVMetadataObjectTypeUPCECode -> BarcodeFormat.FORMAT_UPC_E
-            AVMetadataObjectTypePDF417Code -> BarcodeFormat.FORMAT_PDF417
-            AVMetadataObjectTypeAztecCode -> BarcodeFormat.FORMAT_AZTEC
-            AVMetadataObjectTypeDataMatrixCode -> BarcodeFormat.FORMAT_DATA_MATRIX
-            else -> BarcodeFormat.TYPE_UNKNOWN
-        }
-
+    @OptIn(ExperimentalForeignApi::class)
     fun setZoom(ratio: Float) {
         try {
             device.lockForConfiguration(null)
@@ -237,4 +176,44 @@ class CameraViewController(
             print("Failed to update zoom: ${e.message}")
         }
     }
+
+    private fun getMetadataObjectTypes(): List<AVMetadataObjectType> {
+        if (codeTypes.isEmpty() || codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) {
+            return ALL_SUPPORTED_AV_TYPES
+        }
+
+        return codeTypes.mapNotNull { appFormat ->
+            APP_TO_AV_FORMAT_MAP[appFormat]
+        }
+    }
+
+    private fun isRequestedFormat(type: AVMetadataObjectType): Boolean {
+        if (codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) {
+            return AV_TO_APP_FORMAT_MAP.containsKey(type)
+        }
+        val appFormat = AV_TO_APP_FORMAT_MAP[type] ?: return false
+        return codeTypes.contains(appFormat)
+    }
+
+    private fun AVMetadataObjectType.toFormat(): BarcodeFormat {
+        return AV_TO_APP_FORMAT_MAP[this] ?: BarcodeFormat.TYPE_UNKNOWN
+    }
+
+    private val AV_TO_APP_FORMAT_MAP: Map<AVMetadataObjectType, BarcodeFormat> = mapOf(
+        AVMetadataObjectTypeQRCode to BarcodeFormat.FORMAT_QR_CODE,
+        AVMetadataObjectTypeEAN13Code to BarcodeFormat.FORMAT_EAN_13,
+        AVMetadataObjectTypeEAN8Code to BarcodeFormat.FORMAT_EAN_8,
+        AVMetadataObjectTypeCode128Code to BarcodeFormat.FORMAT_CODE_128,
+        AVMetadataObjectTypeCode39Code to BarcodeFormat.FORMAT_CODE_39,
+        AVMetadataObjectTypeCode93Code to BarcodeFormat.FORMAT_CODE_93,
+        AVMetadataObjectTypeUPCECode to BarcodeFormat.FORMAT_UPC_E,
+        AVMetadataObjectTypePDF417Code to BarcodeFormat.FORMAT_PDF417,
+        AVMetadataObjectTypeAztecCode to BarcodeFormat.FORMAT_AZTEC,
+        AVMetadataObjectTypeDataMatrixCode to BarcodeFormat.FORMAT_DATA_MATRIX
+    )
+
+    private val APP_TO_AV_FORMAT_MAP: Map<BarcodeFormat, AVMetadataObjectType> =
+        AV_TO_APP_FORMAT_MAP.entries.associateBy({ it.value }) { it.key }
+
+    val ALL_SUPPORTED_AV_TYPES: List<AVMetadataObjectType> = AV_TO_APP_FORMAT_MAP.keys.toList()
 }
