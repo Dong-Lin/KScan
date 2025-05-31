@@ -135,7 +135,7 @@ class CameraViewController(
             .mapNotNull { metadataObject ->
                 if (!::previewLayer.isInitialized) return@mapNotNull null
                 previewLayer.transformedMetadataObjectForMetadataObject(metadataObject)
-                        as? AVMetadataMachineReadableCodeObject
+                    as? AVMetadataMachineReadableCodeObject
             }
             .filter { barcodeObject ->
                 isRequestedFormat(barcodeObject.type) // Uses the cleaner version
@@ -159,7 +159,7 @@ class CameraViewController(
                 )
             onBarcodeSuccess(listOf(barcode))
             barcodesDetected.clear()
-            if(::captureSession.isInitialized && captureSession.isRunning()) {
+            if (::captureSession.isInitialized && captureSession.isRunning()) {
                 captureSession.stopRunning()
             }
         }
@@ -199,18 +199,19 @@ class CameraViewController(
         return AV_TO_APP_FORMAT_MAP[this] ?: BarcodeFormat.TYPE_UNKNOWN
     }
 
-    private val AV_TO_APP_FORMAT_MAP: Map<AVMetadataObjectType, BarcodeFormat> = mapOf(
-        AVMetadataObjectTypeQRCode to BarcodeFormat.FORMAT_QR_CODE,
-        AVMetadataObjectTypeEAN13Code to BarcodeFormat.FORMAT_EAN_13,
-        AVMetadataObjectTypeEAN8Code to BarcodeFormat.FORMAT_EAN_8,
-        AVMetadataObjectTypeCode128Code to BarcodeFormat.FORMAT_CODE_128,
-        AVMetadataObjectTypeCode39Code to BarcodeFormat.FORMAT_CODE_39,
-        AVMetadataObjectTypeCode93Code to BarcodeFormat.FORMAT_CODE_93,
-        AVMetadataObjectTypeUPCECode to BarcodeFormat.FORMAT_UPC_E,
-        AVMetadataObjectTypePDF417Code to BarcodeFormat.FORMAT_PDF417,
-        AVMetadataObjectTypeAztecCode to BarcodeFormat.FORMAT_AZTEC,
-        AVMetadataObjectTypeDataMatrixCode to BarcodeFormat.FORMAT_DATA_MATRIX
-    )
+    private val AV_TO_APP_FORMAT_MAP: Map<AVMetadataObjectType, BarcodeFormat> =
+        mapOf(
+            AVMetadataObjectTypeQRCode to BarcodeFormat.FORMAT_QR_CODE,
+            AVMetadataObjectTypeEAN13Code to BarcodeFormat.FORMAT_EAN_13,
+            AVMetadataObjectTypeEAN8Code to BarcodeFormat.FORMAT_EAN_8,
+            AVMetadataObjectTypeCode128Code to BarcodeFormat.FORMAT_CODE_128,
+            AVMetadataObjectTypeCode39Code to BarcodeFormat.FORMAT_CODE_39,
+            AVMetadataObjectTypeCode93Code to BarcodeFormat.FORMAT_CODE_93,
+            AVMetadataObjectTypeUPCECode to BarcodeFormat.FORMAT_UPC_E,
+            AVMetadataObjectTypePDF417Code to BarcodeFormat.FORMAT_PDF417,
+            AVMetadataObjectTypeAztecCode to BarcodeFormat.FORMAT_AZTEC,
+            AVMetadataObjectTypeDataMatrixCode to BarcodeFormat.FORMAT_DATA_MATRIX,
+        )
 
     private val APP_TO_AV_FORMAT_MAP: Map<BarcodeFormat, AVMetadataObjectType> =
         AV_TO_APP_FORMAT_MAP.entries.associateBy({ it.value }) { it.key }

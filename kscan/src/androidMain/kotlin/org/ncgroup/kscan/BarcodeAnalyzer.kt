@@ -31,7 +31,6 @@ class BarcodeAnalyzer(
     private val onFailed: (Exception) -> Unit,
     private val onCanceled: () -> Unit,
 ) : ImageAnalysis.Analyzer {
-
     private val scannerOptions =
         BarcodeScannerOptions.Builder()
             .setBarcodeFormats(getMLKitBarcodeFormats(codeTypes))
@@ -61,10 +60,11 @@ class BarcodeAnalyzer(
             return
         }
 
-        val mediaImage = imageProxy.image ?: run {
-            imageProxy.close()
-            return
-        }
+        val mediaImage =
+            imageProxy.image ?: run {
+                imageProxy.close()
+                return
+            }
 
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
@@ -119,26 +119,26 @@ class BarcodeAnalyzer(
     }
 
     companion object {
-        private val APP_TO_MLKIT_FORMAT_MAP: Map<BarcodeFormat, Int> = mapOf(
-            BarcodeFormat.FORMAT_QR_CODE to FORMAT_QR_CODE,
-            BarcodeFormat.FORMAT_CODE_128 to FORMAT_CODE_128,
-            BarcodeFormat.FORMAT_CODE_39 to FORMAT_CODE_39,
-            BarcodeFormat.FORMAT_CODE_93 to FORMAT_CODE_93,
-            BarcodeFormat.FORMAT_CODABAR to FORMAT_CODABAR,
-            BarcodeFormat.FORMAT_DATA_MATRIX to FORMAT_DATA_MATRIX,
-            BarcodeFormat.FORMAT_EAN_13 to FORMAT_EAN_13,
-            BarcodeFormat.FORMAT_EAN_8 to FORMAT_EAN_8,
-            BarcodeFormat.FORMAT_ITF to FORMAT_ITF,
-            BarcodeFormat.FORMAT_UPC_A to FORMAT_UPC_A,
-            BarcodeFormat.FORMAT_UPC_E to FORMAT_UPC_E,
-            BarcodeFormat.FORMAT_PDF417 to FORMAT_PDF417,
-            BarcodeFormat.FORMAT_AZTEC to FORMAT_AZTEC
-        )
+        private val APP_TO_MLKIT_FORMAT_MAP: Map<BarcodeFormat, Int> =
+            mapOf(
+                BarcodeFormat.FORMAT_QR_CODE to FORMAT_QR_CODE,
+                BarcodeFormat.FORMAT_CODE_128 to FORMAT_CODE_128,
+                BarcodeFormat.FORMAT_CODE_39 to FORMAT_CODE_39,
+                BarcodeFormat.FORMAT_CODE_93 to FORMAT_CODE_93,
+                BarcodeFormat.FORMAT_CODABAR to FORMAT_CODABAR,
+                BarcodeFormat.FORMAT_DATA_MATRIX to FORMAT_DATA_MATRIX,
+                BarcodeFormat.FORMAT_EAN_13 to FORMAT_EAN_13,
+                BarcodeFormat.FORMAT_EAN_8 to FORMAT_EAN_8,
+                BarcodeFormat.FORMAT_ITF to FORMAT_ITF,
+                BarcodeFormat.FORMAT_UPC_A to FORMAT_UPC_A,
+                BarcodeFormat.FORMAT_UPC_E to FORMAT_UPC_E,
+                BarcodeFormat.FORMAT_PDF417 to FORMAT_PDF417,
+                BarcodeFormat.FORMAT_AZTEC to FORMAT_AZTEC,
+            )
 
         private val MLKIT_TO_APP_FORMAT_MAP: Map<Int, BarcodeFormat> =
             APP_TO_MLKIT_FORMAT_MAP.entries.associateBy({ it.value }) { it.key }
                 .plus(FORMAT_UNKNOWN to BarcodeFormat.TYPE_UNKNOWN)
-
 
         fun getMLKitBarcodeFormats(appFormats: List<BarcodeFormat>): Int {
             if (appFormats.isEmpty() || appFormats.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) {
@@ -157,4 +157,3 @@ class BarcodeAnalyzer(
         }
     }
 }
-
