@@ -28,6 +28,7 @@ actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
     showUi: Boolean,
+    scannerController: ScannerController?,
     result: (BarcodeResult) -> Unit,
 ) {
     var torchEnabled by remember { mutableStateOf(false) }
@@ -45,6 +46,25 @@ actual fun ScannerView(
         }
 
     if (captureDevice == null && cameraViewController == null) return
+
+    scannerController?.onTorchChange = { enabled ->
+        runCatching {
+            if (captureDevice!!.hasTorch) {
+                captureDevice!!.lockForConfiguration(null)
+                captureDevice!!.torchMode =
+                    if (enabled) AVCaptureTorchModeOn else AVCaptureTorchModeOff
+                captureDevice!!.unlockForConfiguration()
+                scannerController.torchEnabled = enabled
+            }
+        }
+    }
+
+    scannerController?.onZoomChange = { ratio ->
+        cameraViewController!!.setZoom(ratio)
+        scannerController.zoomRatio = ratio
+    }
+
+    scannerController?.maxZoomRatio = maxZoomRatio
 
     cameraViewController =
         remember {

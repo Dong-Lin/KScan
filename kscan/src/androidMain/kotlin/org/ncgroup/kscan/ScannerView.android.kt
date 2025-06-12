@@ -31,6 +31,7 @@ actual fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors,
     showUi: Boolean,
+    scannerController: ScannerController?,
     result: (BarcodeResult) -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,6 +62,18 @@ actual fun ScannerView(
             maxZoomRatio = it.maxZoomRatio
         }
     }
+
+    scannerController?.onTorchChange = { enabled ->
+        cameraControl?.enableTorch(enabled)
+        scannerController.torchEnabled = enabled
+    }
+
+    scannerController?.onZoomChange = { ratio ->
+        cameraControl?.setZoomRatio(ratio)
+        scannerController.zoomRatio = ratio
+    }
+
+    scannerController?.maxZoomRatio = maxZoomRatio
 
     Box(
         modifier = modifier,

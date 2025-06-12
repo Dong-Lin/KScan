@@ -10,5 +10,6 @@ expect fun ScannerView(
     codeTypes: List<BarcodeFormat>,
     colors: ScannerColors = scannerColors(),
     showUi: Boolean = true,
+    scannerController: ScannerController? = null,
     result: (BarcodeResult) -> Unit,
 )
