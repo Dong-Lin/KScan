@@ -40,12 +40,12 @@ kotlin {
             api(project(":kscan"))
         }
         androidMain.dependencies {
-            implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
             api(libs.androidx.activityCompose)
             api(libs.androidx.appcompat)
             api(libs.androidx.core.ktx)
             api(libs.moko.permissions)
             api(libs.moko.permissions.compose)
+            api(compose.preview)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
