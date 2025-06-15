@@ -161,10 +161,14 @@ if (showScanner) {
     ) { result ->
         when (result) {
             is BarcodeResult.OnSuccess -> {
-                println("Barcode: ${result.barcode.data}")
+                println("Barcode: ${result.barcode.data}, format: ${result.barcode.format}")
                 showScanner = false
             }
-            is BarcodeResult.OnFailed, BarcodeResult.OnCanceled -> {
+            is BarcodeResult.OnFailed -> {
+                println("Error: ${result.exception.message}")
+                showScanner = false
+            }
+            BarcodeResult.OnCanceled -> {
                 showScanner = false
             }
         }
