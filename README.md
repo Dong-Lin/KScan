@@ -147,3 +147,43 @@ if (showScanner) {
     }
 }
 ```
+
+If you want to build your own scanning UI (e.g. to add torch toggle, zoom, or custom overlays), you can pass a ScannerController and set showUi = false. This gives you full control over the camera view while still receiving scan results
+
+```Kotlin
+val scannerController = remember { ScannerController() }
+
+if (showScanner) {
+    ScannerView(
+        codeTypes = listOf(BarcodeFormat.FORMAT_ALL_FORMATS),
+        showUi = false,
+        scannerController = scannerController
+    ) { result ->
+        when (result) {
+            is BarcodeResult.OnSuccess -> {
+                println("Barcode: ${result.barcode.data}")
+                showScanner = false
+            }
+            is BarcodeResult.OnFailed, BarcodeResult.OnCanceled -> {
+                showScanner = false
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            scannerController.setTorch(!scannerController.torchEnabled)
+        }) {
+            Text("Torch ${if (scannerController.torchEnabled) "Off" else "On"}")
+        }
+        Slider(
+            value = scannerController.zoomRatio,
+            onValueChange = scannerController::setZoom,
+            valueRange = 1f..scannerController.maxZoomRatio
+        )
+    }
+}
+```
