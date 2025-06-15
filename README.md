@@ -148,7 +148,7 @@ if (showScanner) {
 }
 ```
 
-If you want to build your own scanning UI (e.g. to add torch toggle, zoom, or custom overlays), you can pass a ScannerController and set showUi = false. This gives you full control over the camera view while still receiving scan results
+To build a custom scanner UI with torch and zoom control, set showUi = false and use a ScannerController.
 
 ```Kotlin
 val scannerController = remember { ScannerController() }
