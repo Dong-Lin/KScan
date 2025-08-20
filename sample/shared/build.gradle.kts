@@ -24,9 +24,7 @@ kotlin {
     }
 
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-    }
+    wasmJs()
 
     sourceSets {
         val desktopMain by getting
