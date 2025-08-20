@@ -37,6 +37,16 @@ import platform.UIKit.UIInterfaceOrientationPortraitUpsideDown
 import platform.UIKit.UIViewController
 import platform.darwin.dispatch_get_main_queue
 
+/**
+ * A UIViewController that manages the camera preview and barcode scanning.
+ *
+ * @property device The AVCaptureDevice to use for capturing video.
+ * @property codeTypes A list of BarcodeFormat types to detect.
+ * @property onBarcodeSuccess A callback function that is invoked when barcodes are successfully detected.
+ * @property onBarcodeFailed A callback function that is invoked when an error occurs during barcode scanning.
+ * @property onBarcodeCanceled A callback function that is invoked when barcode scanning is canceled. (Currently not used within this class)
+ * @property onMaxZoomRatioAvailable A callback function that is invoked with the maximum available zoom ratio for the camera.
+ */
 class CameraViewController(
     private val device: AVCaptureDevice,
     private val codeTypes: List<BarcodeFormat>,

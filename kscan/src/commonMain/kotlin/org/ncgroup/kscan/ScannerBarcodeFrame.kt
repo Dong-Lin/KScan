@@ -12,6 +12,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
+/**
+ * A composable function that draws a frame for a barcode scanner.
+ *
+ * @param modifier The modifier to be applied to the frame.
+ * @param frameColor The color of the frame.
+ * @param frameWidth The width of the frame.
+ * @param cornerLength The length of the corners of the frame.
+ */
 @Composable
 internal fun ScannerBarcodeFrame(
     modifier: Modifier = Modifier,

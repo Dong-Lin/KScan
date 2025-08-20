@@ -24,6 +24,30 @@ import com.google.mlkit.vision.barcode.common.Barcode.FORMAT_UPC_A
 import com.google.mlkit.vision.barcode.common.Barcode.FORMAT_UPC_E
 import com.google.mlkit.vision.common.InputImage
 
+/**
+ * Analyzes images for barcodes using ML Kit.
+ *
+ * This class implements [ImageAnalysis.Analyzer] to process camera frames.
+ * It uses ML Kit's Barcode Scanning API to detect and decode barcodes.
+ *
+ * It features:
+ * - **Configurable Barcode Types**: Scans for specific barcode formats defined by `codeTypes`.
+ * - **Zoom Suggestion**: Utilizes ML Kit's zoom suggestion feature to prompt the user to zoom if a barcode is detected but is too small. The zoom is handled automatically if the camera supports it.
+ * - **Duplicate Filtering**: To ensure accuracy and prevent multiple triggers for the same barcode, a barcode must be detected twice in quick succession before it's considered successfully processed.
+ * - **Single Success Processing**: Once a barcode is successfully processed (detected twice), further analysis is stopped to prevent redundant callbacks.
+ * - **Callbacks**:
+ *     - `onSuccess`: Called when a barcode is successfully detected and meets the criteria.
+ *     - `onFailed`: Called if an error occurs during the barcode scanning process.
+ *     - `onCanceled`: Called if the barcode scanning task is canceled.
+ *
+ * The analyzer maps ML Kit's barcode formats to a custom `BarcodeFormat` enum for application-specific use.
+ *
+ * @property camera The [Camera] instance, used for zoom control. Can be null if zoom control is not needed or available.
+ * @property codeTypes A list of [BarcodeFormat] enums specifying which barcode types to scan for. If empty or contains `BarcodeFormat.FORMAT_ALL_FORMATS`, all supported formats are scanned.
+ * @property onSuccess A callback function that is invoked when a barcode is successfully detected and validated. It receives a list containing the single detected [Barcode].
+ * @property onFailed A callback function that is invoked when an error occurs during the image analysis or barcode scanning process. It receives the [Exception] that occurred.
+ * @property onCanceled A callback function that is invoked if the barcode scanning task is canceled.
+ */
 class BarcodeAnalyzer(
     private val camera: Camera?,
     private val codeTypes: List<BarcodeFormat>,

@@ -17,6 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * A Composable function that provides UI controls for adjusting the zoom level of a scanner.
+ * It displays two buttons, one for zooming in and one for zooming out.
+ *
+ * @param modifier Optional [Modifier] for this composable.
+ * @param zoomRatio The current zoom ratio of the scanner.
+ * @param zoomRatioOnChange A callback function that is invoked when the zoom ratio changes.
+ * It takes the new zoom ratio as a Float parameter.
+ * @param maxZoomRatio The maximum zoom ratio allowed for the scanner.
+ * @param zoomStep The increment or decrement value for each zoom adjustment. Defaults to 0.5f.
+ * @param containerColor The background color of the zoom adjuster card. Defaults to Color(0xFF291544).
+ * @param contentColor The color of the icons and text within the zoom adjuster card. Defaults to Color.White.
+ */
 @Composable
 internal fun ScannerZoomAdjuster(
     modifier: Modifier = Modifier,

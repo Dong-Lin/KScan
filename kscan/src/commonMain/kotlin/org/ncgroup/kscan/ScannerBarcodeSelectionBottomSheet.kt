@@ -20,6 +20,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * A bottom sheet composable that displays a list of detected barcodes, allowing the user to select one.
+ * This is typically used when the scanner detects multiple barcodes and requires user disambiguation.
+ *
+ * @param barcodes A list of [Barcode] objects detected by the scanner.
+ * @param sheetState The [SheetState] for controlling the bottom sheet's visibility and behavior.
+ * @param onDismissRequest A callback invoked when the user requests to dismiss the bottom sheet
+ *                         (e.g., by swiping down or tapping outside).
+ * @param result A callback function that is invoked when a barcode is selected. It receives a
+ *               [BarcodeResult.OnSuccess] containing the selected [Barcode].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScannerBarcodeSelectionBottomSheet(

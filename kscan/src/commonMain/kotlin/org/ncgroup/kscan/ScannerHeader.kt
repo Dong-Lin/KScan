@@ -14,6 +14,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+/**
+ * A composable function that displays a scanner header with a title, cancel button, and torch toggle button.
+ *
+ * @param modifier The modifier to be applied to the scanner header.
+ * @param onCancel A callback function that is invoked when the cancel button is clicked.
+ * @param torchEnabled A boolean value that indicates whether the torch is enabled.
+ * @param onTorchEnabled A callback function that is invoked when the torch toggle button is clicked.
+ * @param containerColor The color of the container.
+ * @param navigationIconColor The color of the navigation icon.
+ * @param titleColor The color of the title.
+ * @param actionIconColor The color of the action icon.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ScannerHeader(

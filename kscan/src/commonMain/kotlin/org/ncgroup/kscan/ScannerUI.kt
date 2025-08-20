@@ -9,6 +9,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * A Composable function that displays the scanner UI.
+ *
+ * @param onCancel A callback function that is invoked when the cancel button is clicked.
+ * @param torchEnabled A boolean value that indicates whether the torch is enabled.
+ * @param onTorchEnabled A callback function that is invoked when the torch button is clicked.
+ * @param zoomRatio A float value that represents the current zoom ratio.
+ * @param zoomRatioOnChange A callback function that is invoked when the zoom ratio changes.
+ * @param maxZoomRatio A float value that represents the maximum zoom ratio.
+ * @param colors An optional [ScannerColors] object that specifies the colors for the scanner UI.
+ */
 @Composable
 fun ScannerUI(
     onCancel: () -> Unit,

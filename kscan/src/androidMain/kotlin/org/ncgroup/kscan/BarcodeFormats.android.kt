@@ -1,5 +1,42 @@
 package org.ncgroup.kscan
 
+/**
+ * An object that contains constants for the different barcode formats and types that can be scanned.
+ *
+ * This object provides a set of predefined barcode formats and types that can be used to configure
+ * the barcode scanner. Each constant represents a specific barcode format or type.
+ *
+ * The available barcode formats include:
+ * - `FORMAT_CODE_128`: Code 128 barcode format.
+ * - `FORMAT_CODE_39`: Code 39 barcode format.
+ * - `FORMAT_CODE_93`: Code 93 barcode format.
+ * - `FORMAT_CODABAR`: Codabar barcode format.
+ * - `FORMAT_EAN_13`: EAN-13 barcode format.
+ * - `FORMAT_EAN_8`: EAN-8 barcode format.
+ * - `FORMAT_ITF`: ITF (Interleaved 2 of 5) barcode format.
+ * - `FORMAT_UPC_A`: UPC-A barcode format.
+ * - `FORMAT_UPC_E`: UPC-E barcode format.
+ * - `FORMAT_QR_CODE`: QR Code barcode format.
+ * - `FORMAT_PDF417`: PDF417 barcode format.
+ * - `FORMAT_AZTEC`: Aztec barcode format.
+ * - `FORMAT_DATA_MATRIX`: Data Matrix barcode format.
+ * - `FORMAT_ALL_FORMATS`: A special format that includes all supported barcode formats.
+ *
+ * The available barcode types include:
+ * - `TYPE_UNKNOWN`: Unknown barcode type.
+ * - `TYPE_CONTACT_INFO`: Contact information barcode type.
+ * - `TYPE_EMAIL`: Email barcode type.
+ * - `TYPE_ISBN`: ISBN barcode type.
+ * - `TYPE_PHONE`: Phone number barcode type.
+ * - `TYPE_PRODUCT`: Product barcode type.
+ * - `TYPE_SMS`: SMS barcode type.
+ * - `TYPE_TEXT`: Text barcode type.
+ * - `TYPE_URL`: URL barcode type.
+ * - `TYPE_WIFI`: Wi-Fi network information barcode type.
+ * - `TYPE_GEO`: Geographic location barcode type.
+ * - `TYPE_CALENDAR_EVENT`: Calendar event barcode type.
+ * - `TYPE_DRIVER_LICENSE`: Driver's license barcode type.
+ */
 actual object BarcodeFormats {
     actual val FORMAT_CODE_128: BarcodeFormat = BarcodeFormat.FORMAT_CODE_128
     actual val FORMAT_CODE_39: BarcodeFormat = BarcodeFormat.FORMAT_CODE_39

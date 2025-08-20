@@ -2,6 +2,26 @@
 
 package org.ncgroup.kscan
 
+/**
+ * An object that defines the supported barcode formats.
+ *
+ * This object provides a set of constants representing different barcode formats that can be
+ * recognized and processed. These formats cover a wide range of common barcode symbologies,
+ * including both 1D and 2D codes. Additionally, it defines constants for various data types
+ * that can be encoded within barcodes, such as contact information, URLs, and calendar events.
+ *
+ * The constants are categorized into two groups:
+ * - **Barcode Formats:** These represent the visual encoding of the barcode itself (e.g., QR Code, EAN-13).
+ * - **Barcode Value Types:** These describe the type of data contained within the barcode (e.g., URL, Contact Info).
+ *
+ * This object is used to specify which barcode formats the scanner should attempt to detect.
+ * For example, if you are only interested in scanning QR codes, you can configure the scanner
+ * to only look for `FORMAT_QR_CODE`.
+ *
+ * The `FORMAT_ALL_FORMATS` constant can be used to enable detection of all supported barcode formats.
+ *
+ * Note: The availability of specific formats may depend on the underlying scanning library and platform.
+ */
 actual object BarcodeFormats {
     actual val FORMAT_CODE_128: BarcodeFormat = BarcodeFormat.FORMAT_CODE_128
     actual val FORMAT_CODE_39: BarcodeFormat = BarcodeFormat.FORMAT_CODE_39
