@@ -36,13 +36,14 @@ actual fun ScannerView(
     var maxZoomRatio by remember { mutableStateOf(1f) }
 
     var cameraViewController by remember { mutableStateOf<CameraViewController?>(null) }
-    val captureDevice: AVCaptureDevice? = remember {
-        AVCaptureDevice.defaultDeviceWithDeviceType(
-            AVCaptureDeviceTypeBuiltInWideAngleCamera,
-            AVMediaTypeVideo,
-            AVCaptureDevicePositionBack,
-        )
-    }
+    val captureDevice: AVCaptureDevice? =
+        remember {
+            AVCaptureDevice.defaultDeviceWithDeviceType(
+                AVCaptureDeviceTypeBuiltInWideAngleCamera,
+                AVMediaTypeVideo,
+                AVCaptureDevicePositionBack,
+            )
+        }
 
     if (captureDevice == null) {
         result(BarcodeResult.OnFailed(Exception("No back camera available")))
@@ -70,24 +71,25 @@ actual fun ScannerView(
 
     scannerController?.maxZoomRatio = maxZoomRatio
 
-    cameraViewController = remember {
-        CameraViewController(
-            device = captureDevice,
-            codeTypes = codeTypes,
-            onBarcodeSuccess = { scannedBarcodes ->
-                result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
-            },
-            onBarcodeFailed = { error ->
-                result(BarcodeResult.OnFailed(error))
-            },
-            onBarcodeCanceled = {
-                result(BarcodeResult.OnCanceled)
-            },
-            onMaxZoomRatioAvailable = { maxRatio ->
-                maxZoomRatio = maxRatio
-            },
-        )
-    }
+    cameraViewController =
+        remember {
+            CameraViewController(
+                device = captureDevice,
+                codeTypes = codeTypes,
+                onBarcodeSuccess = { scannedBarcodes ->
+                    result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
+                },
+                onBarcodeFailed = { error ->
+                    result(BarcodeResult.OnFailed(error))
+                },
+                onBarcodeCanceled = {
+                    result(BarcodeResult.OnCanceled)
+                },
+                onMaxZoomRatioAvailable = { maxRatio ->
+                    maxZoomRatio = maxRatio
+                },
+            )
+        }
 
     Box(modifier = modifier) {
         UIKitViewController(

@@ -50,7 +50,7 @@ actual fun ScannerView(
                     initializationError = e
                 }
             },
-            ContextCompat.getMainExecutor(context)
+            ContextCompat.getMainExecutor(context),
         )
     }
 
@@ -99,16 +99,18 @@ actual fun ScannerView(
                     factory = { ctx ->
                         val previewView = PreviewView(ctx)
                         val preview = Preview.Builder().build()
-                        val selector = CameraSelector.Builder()
-                            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                            .build()
+                        val selector =
+                            CameraSelector.Builder()
+                                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                                .build()
 
                         preview.surfaceProvider = previewView.surfaceProvider
 
-                        val imageAnalysis = ImageAnalysis.Builder()
-                            .setTargetResolution(Size(1280, 720))
-                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                            .build()
+                        val imageAnalysis =
+                            ImageAnalysis.Builder()
+                                .setTargetResolution(Size(1280, 720))
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build()
 
                         imageAnalysis.setAnalyzer(
                             ContextCompat.getMainExecutor(ctx),
@@ -124,15 +126,16 @@ actual fun ScannerView(
                             ),
                         )
 
-                        camera = bindCamera(
-                            lifecycleOwner = lifecycleOwner,
-                            cameraProviderFuture = cameraProvider,
-                            selector = selector,
-                            preview = preview,
-                            imageAnalysis = imageAnalysis,
-                            result = result,
-                            cameraControl = { cameraControl = it },
-                        )
+                        camera =
+                            bindCamera(
+                                lifecycleOwner = lifecycleOwner,
+                                cameraProviderFuture = cameraProvider,
+                                selector = selector,
+                                preview = preview,
+                                imageAnalysis = imageAnalysis,
+                                result = result,
+                                cameraControl = { cameraControl = it },
+                            )
 
                         previewView
                     },
