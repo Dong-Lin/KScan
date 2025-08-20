@@ -36,7 +36,7 @@ actual fun ScannerView(
     var maxZoomRatio by remember { mutableStateOf(1f) }
 
     var cameraViewController by remember { mutableStateOf<CameraViewController?>(null) }
-    var captureDevice: AVCaptureDevice? =
+    val captureDevice: AVCaptureDevice? =
         remember {
             AVCaptureDevice.defaultDeviceWithDeviceType(
                 AVCaptureDeviceTypeBuiltInWideAngleCamera,
@@ -45,22 +45,27 @@ actual fun ScannerView(
             )
         }
 
-    if (captureDevice == null && cameraViewController == null) return
+    if (captureDevice == null) {
+        result(BarcodeResult.OnFailed(Exception("No back camera available")))
+        return
+    }
 
     scannerController?.onTorchChange = { enabled ->
         runCatching {
-            if (captureDevice!!.hasTorch) {
-                captureDevice!!.lockForConfiguration(null)
-                captureDevice!!.torchMode =
+            if (captureDevice.hasTorch) {
+                captureDevice.lockForConfiguration(null)
+                captureDevice.torchMode =
                     if (enabled) AVCaptureTorchModeOn else AVCaptureTorchModeOff
-                captureDevice!!.unlockForConfiguration()
+                captureDevice.unlockForConfiguration()
+                torchEnabled = enabled
                 scannerController.torchEnabled = enabled
             }
         }
     }
 
     scannerController?.onZoomChange = { ratio ->
-        cameraViewController!!.setZoom(ratio)
+        cameraViewController?.setZoom(ratio)
+        zoomRatio = ratio
         scannerController.zoomRatio = ratio
     }
 
@@ -69,7 +74,7 @@ actual fun ScannerView(
     cameraViewController =
         remember {
             CameraViewController(
-                device = captureDevice!!,
+                device = captureDevice,
                 codeTypes = codeTypes,
                 onBarcodeSuccess = { scannedBarcodes ->
                     result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
@@ -94,38 +99,36 @@ actual fun ScannerView(
 
         if (showUi) {
             ScannerUI(
-                onCancel = { result(BarcodeResult.OnCanceled) },
+                onCancel = {
+                    result(BarcodeResult.OnCanceled)
+                    cameraViewController = null
+                },
                 torchEnabled = torchEnabled,
                 onTorchEnabled = { enabled ->
                     runCatching {
-                        if (captureDevice!!.hasTorch) {
-                            captureDevice!!.lockForConfiguration(null)
-                            captureDevice!!.torchMode =
-                                if (enabled) {
-                                    AVCaptureTorchModeOn
-                                } else {
-                                    AVCaptureTorchModeOff
-                                }
-                            captureDevice!!.unlockForConfiguration()
+                        if (captureDevice.hasTorch) {
+                            captureDevice.lockForConfiguration(null)
+                            captureDevice.torchMode =
+                                if (enabled) AVCaptureTorchModeOn else AVCaptureTorchModeOff
+                            captureDevice.unlockForConfiguration()
                             torchEnabled = enabled
                         }
                     }
                 },
                 zoomRatio = zoomRatio,
                 zoomRatioOnChange = { ratio ->
-                    cameraViewController!!.setZoom(ratio)
+                    cameraViewController?.setZoom(ratio)
                     zoomRatio = ratio
                 },
                 maxZoomRatio = maxZoomRatio,
                 colors = colors,
             )
         }
+    }
 
-        DisposableEffect(Unit) {
-            onDispose {
-                captureDevice = null
-                cameraViewController = null
-            }
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraViewController = null
         }
     }
 }

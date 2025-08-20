@@ -8,6 +8,11 @@ import platform.AVFoundation.AVCaptureMetadataOutput
 import platform.AVFoundation.AVCaptureMetadataOutputObjectsDelegateProtocol
 import platform.AVFoundation.AVCaptureOutput
 import platform.AVFoundation.AVCaptureSession
+import platform.AVFoundation.AVCaptureVideoOrientation
+import platform.AVFoundation.AVCaptureVideoOrientationLandscapeLeft
+import platform.AVFoundation.AVCaptureVideoOrientationLandscapeRight
+import platform.AVFoundation.AVCaptureVideoOrientationPortrait
+import platform.AVFoundation.AVCaptureVideoOrientationPortraitUpsideDown
 import platform.AVFoundation.AVCaptureVideoPreviewLayer
 import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVMetadataMachineReadableCodeObject
@@ -23,17 +28,11 @@ import platform.AVFoundation.AVMetadataObjectTypePDF417Code
 import platform.AVFoundation.AVMetadataObjectTypeQRCode
 import platform.AVFoundation.AVMetadataObjectTypeUPCECode
 import platform.AVFoundation.videoZoomFactor
-import platform.AVFoundation.AVCaptureVideoOrientation
-import platform.AVFoundation.AVCaptureVideoOrientationLandscapeLeft
-import platform.AVFoundation.AVCaptureVideoOrientationLandscapeRight
-import platform.AVFoundation.AVCaptureVideoOrientationPortrait
-import platform.AVFoundation.AVCaptureVideoOrientationPortraitUpsideDown
-import platform.UIKit.UIColor
 import platform.UIKit.UIApplication
+import platform.UIKit.UIColor
 import platform.UIKit.UIInterfaceOrientation
 import platform.UIKit.UIInterfaceOrientationLandscapeLeft
 import platform.UIKit.UIInterfaceOrientationLandscapeRight
-import platform.UIKit.UIInterfaceOrientationPortrait
 import platform.UIKit.UIInterfaceOrientationPortraitUpsideDown
 import platform.UIKit.UIViewController
 import platform.darwin.dispatch_get_main_queue
@@ -182,7 +181,9 @@ class CameraViewController(
     fun setZoom(ratio: Float) {
         try {
             device.lockForConfiguration(null)
+
             val maxZoom = device.activeFormat.videoMaxZoomFactor.toFloat().coerceAtMost(5.0f)
+
             device.videoZoomFactor = ratio.toDouble().coerceIn(1.0, maxZoom.toDouble())
             device.unlockForConfiguration()
         } catch (e: Exception) {
@@ -204,22 +205,27 @@ class CameraViewController(
         if (codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) {
             return AV_TO_APP_FORMAT_MAP.containsKey(type)
         }
+
         val appFormat = AV_TO_APP_FORMAT_MAP[type] ?: return false
+
         return codeTypes.contains(appFormat)
     }
 
     private fun updatePreviewOrientation() {
         if (!::previewLayer.isInitialized) return
+
         val connection = previewLayer.connection ?: return
-        // Map the current UI interface orientation to AVCapture orientation
+
         val uiOrientation: UIInterfaceOrientation = UIApplication.sharedApplication().statusBarOrientation
-        val videoOrientation: AVCaptureVideoOrientation = when (uiOrientation) {
-            UIInterfaceOrientationLandscapeLeft -> AVCaptureVideoOrientationLandscapeLeft
-            UIInterfaceOrientationLandscapeRight -> AVCaptureVideoOrientationLandscapeRight
-            UIInterfaceOrientationPortraitUpsideDown -> AVCaptureVideoOrientationPortraitUpsideDown
-            else -> AVCaptureVideoOrientationPortrait
-        }
-        // Set the preview connection orientation (use property setter in Kotlin/Native)
+
+        val videoOrientation: AVCaptureVideoOrientation =
+            when (uiOrientation) {
+                UIInterfaceOrientationLandscapeLeft -> AVCaptureVideoOrientationLandscapeLeft
+                UIInterfaceOrientationLandscapeRight -> AVCaptureVideoOrientationLandscapeRight
+                UIInterfaceOrientationPortraitUpsideDown -> AVCaptureVideoOrientationPortraitUpsideDown
+                else -> AVCaptureVideoOrientationPortrait
+            }
+
         connection.videoOrientation = videoOrientation
     }
 

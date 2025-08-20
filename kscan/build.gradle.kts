@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -72,7 +71,7 @@ android {
 mavenPublishing {
 //    publishToMavenCentral(SonatypeHost.DEFAULT)
     // or when publishing to https://s01.oss.sonatype.org
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+    publishToMavenCentral()
     signAllPublications()
     coordinates("io.github.ismai117", "KScan", "0.1.0-beta08")
 

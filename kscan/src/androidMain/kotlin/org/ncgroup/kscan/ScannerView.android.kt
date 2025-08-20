@@ -37,11 +37,22 @@ actual fun ScannerView(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val cameraProviderFuture =
-        remember {
-            ProcessCameraProvider.getInstance(context)
-                .get()
-        }
+    var cameraProvider: ProcessCameraProvider? by remember { mutableStateOf(null) }
+    var initializationError: Throwable? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(Unit) {
+        val future = ProcessCameraProvider.getInstance(context)
+        future.addListener(
+            {
+                try {
+                    cameraProvider = future.get()
+                } catch (e: Exception) {
+                    initializationError = e
+                }
+            },
+            ContextCompat.getMainExecutor(context),
+        )
+    }
 
     var camera: Camera? by remember { mutableStateOf(null) }
     var cameraControl: CameraControl? by remember { mutableStateOf(null) }
@@ -50,13 +61,12 @@ actual fun ScannerView(
     var zoomRatio by remember { mutableStateOf(1f) }
     var maxZoomRatio by remember { mutableStateOf(1f) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(camera) {
         camera?.cameraInfo?.torchState?.observe(lifecycleOwner) {
             torchEnabled = it == TorchState.ON
         }
     }
-
-    LaunchedEffect(Unit) {
+    LaunchedEffect(camera) {
         camera?.cameraInfo?.zoomState?.observe(lifecycleOwner) {
             zoomRatio = it.zoomRatio
             maxZoomRatio = it.maxZoomRatio
@@ -75,59 +85,67 @@ actual fun ScannerView(
 
     scannerController?.maxZoomRatio = maxZoomRatio
 
-    Box(
-        modifier = modifier,
-    ) {
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { context ->
+    Box(modifier = modifier) {
+        when {
+            initializationError != null -> {
+                LaunchedEffect(initializationError) {
+                    result(BarcodeResult.OnFailed(Exception(initializationError)))
+                }
+            }
 
-                val previewView = PreviewView(context)
-                val preview = Preview.Builder().build()
-                val selector =
-                    CameraSelector.Builder()
-                        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                        .build()
+            cameraProvider != null -> {
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = { ctx ->
+                        val previewView = PreviewView(ctx)
+                        val preview = Preview.Builder().build()
+                        val selector =
+                            CameraSelector.Builder()
+                                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                                .build()
 
-                preview.surfaceProvider = previewView.surfaceProvider
+                        preview.surfaceProvider = previewView.surfaceProvider
 
-                val imageAnalysis =
-                    ImageAnalysis.Builder()
-                        .setTargetResolution(Size(1280, 720))
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
+                        val imageAnalysis =
+                            ImageAnalysis.Builder()
+                                .setTargetResolution(Size(1280, 720))
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build()
 
-                imageAnalysis.setAnalyzer(
-                    ContextCompat.getMainExecutor(context),
-                    BarcodeAnalyzer(
-                        camera = camera,
-                        codeTypes = codeTypes,
-                        onSuccess = { scannedBarcodes ->
-                            result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
-                            cameraProviderFuture.unbind(imageAnalysis)
-                        },
-                        onFailed = { result(BarcodeResult.OnFailed(Exception(it))) },
-                        onCanceled = { result(BarcodeResult.OnCanceled) },
-                    ),
+                        imageAnalysis.setAnalyzer(
+                            ContextCompat.getMainExecutor(ctx),
+                            BarcodeAnalyzer(
+                                camera = camera,
+                                codeTypes = codeTypes,
+                                onSuccess = { scannedBarcodes ->
+                                    result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
+                                    cameraProvider?.unbind(imageAnalysis)
+                                },
+                                onFailed = { result(BarcodeResult.OnFailed(Exception(it))) },
+                                onCanceled = { result(BarcodeResult.OnCanceled) },
+                            ),
+                        )
+
+                        camera =
+                            bindCamera(
+                                lifecycleOwner = lifecycleOwner,
+                                cameraProviderFuture = cameraProvider,
+                                selector = selector,
+                                preview = preview,
+                                imageAnalysis = imageAnalysis,
+                                result = result,
+                                cameraControl = { cameraControl = it },
+                            )
+
+                        previewView
+                    },
+                    onRelease = {
+                        cameraProvider?.unbindAll()
+                    },
                 )
-
-                camera =
-                    bindCamera(
-                        lifecycleOwner = lifecycleOwner,
-                        cameraProviderFuture = cameraProviderFuture,
-                        selector = selector,
-                        preview = preview,
-                        imageAnalysis = imageAnalysis,
-                        result = result,
-                        cameraControl = { cameraControl = it },
-                    )
-
-                previewView
-            },
-            onRelease = {
-                cameraProviderFuture.unbind()
-            },
-        )
+            }
+            else -> {}
+        }
 
         if (showUi) {
             ScannerUI(
@@ -135,9 +153,7 @@ actual fun ScannerView(
                 torchEnabled = torchEnabled,
                 onTorchEnabled = { cameraControl?.enableTorch(it) },
                 zoomRatio = zoomRatio,
-                zoomRatioOnChange = { ratio ->
-                    cameraControl?.setZoomRatio(ratio)
-                },
+                zoomRatioOnChange = { ratio -> cameraControl?.setZoomRatio(ratio) },
                 maxZoomRatio = maxZoomRatio,
                 colors = colors,
             )
@@ -146,7 +162,7 @@ actual fun ScannerView(
 
     DisposableEffect(Unit) {
         onDispose {
-            cameraProviderFuture.unbindAll()
+            cameraProvider?.unbindAll()
             camera = null
             cameraControl = null
         }
