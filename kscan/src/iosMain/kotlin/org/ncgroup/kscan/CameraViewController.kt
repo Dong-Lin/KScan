@@ -182,7 +182,9 @@ class CameraViewController(
     fun setZoom(ratio: Float) {
         try {
             device.lockForConfiguration(null)
+
             val maxZoom = device.activeFormat.videoMaxZoomFactor.toFloat().coerceAtMost(5.0f)
+
             device.videoZoomFactor = ratio.toDouble().coerceIn(1.0, maxZoom.toDouble())
             device.unlockForConfiguration()
         } catch (e: Exception) {
@@ -204,22 +206,26 @@ class CameraViewController(
         if (codeTypes.contains(BarcodeFormat.FORMAT_ALL_FORMATS)) {
             return AV_TO_APP_FORMAT_MAP.containsKey(type)
         }
+
         val appFormat = AV_TO_APP_FORMAT_MAP[type] ?: return false
+
         return codeTypes.contains(appFormat)
     }
 
     private fun updatePreviewOrientation() {
         if (!::previewLayer.isInitialized) return
+
         val connection = previewLayer.connection ?: return
-        // Map the current UI interface orientation to AVCapture orientation
+
         val uiOrientation: UIInterfaceOrientation = UIApplication.sharedApplication().statusBarOrientation
+
         val videoOrientation: AVCaptureVideoOrientation = when (uiOrientation) {
             UIInterfaceOrientationLandscapeLeft -> AVCaptureVideoOrientationLandscapeLeft
             UIInterfaceOrientationLandscapeRight -> AVCaptureVideoOrientationLandscapeRight
             UIInterfaceOrientationPortraitUpsideDown -> AVCaptureVideoOrientationPortraitUpsideDown
             else -> AVCaptureVideoOrientationPortrait
         }
-        // Set the preview connection orientation (use property setter in Kotlin/Native)
+
         connection.videoOrientation = videoOrientation
     }
 
