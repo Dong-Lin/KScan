@@ -14,7 +14,7 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    jvm("desktop")
+    jvm()
 
     listOf(
         iosX64(),

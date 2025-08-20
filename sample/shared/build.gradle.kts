@@ -10,7 +10,7 @@ plugins {
 kotlin {
     androidTarget()
 
-    jvm("desktop")
+    jvm()
 
     listOf(
         iosX64(),
@@ -27,7 +27,6 @@ kotlin {
     wasmJs()
 
     sourceSets {
-        val desktopMain by getting
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -46,9 +45,6 @@ kotlin {
             api(libs.moko.permissions)
             api(libs.moko.permissions.compose)
             api(compose.preview)
-        }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
         }
         iosMain.dependencies {
             api(libs.moko.permissions)
