@@ -163,7 +163,7 @@ class CameraViewController(
                     as? AVMetadataMachineReadableCodeObject
             }
             .filter { barcodeObject ->
-                isRequestedFormat(barcodeObject.type) // Uses the cleaner version
+                isRequestedFormat(barcodeObject.type)
             }.forEach { barcodeObject ->
                 processDetectedBarcode(barcodeObject.stringValue ?: "", barcodeObject.type)
             }
