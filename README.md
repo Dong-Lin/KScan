@@ -21,10 +21,14 @@ Compose Multiplatform Barcode Scanning Library
   </tr>
   <tr>
     <td>
-      <img src="https://github.com/user-attachments/assets/5fb62743-71ff-4d65-ad7b-a490eb6148eb.gif" width="320" alt="Android Demo"/>
+      <a href="https://github.com/user-attachments/assets/5fb62743-71ff-4d65-ad7b-a490eb6148eb">
+        <img src="https://img.shields.io/badge/▶️-Watch%20Demo-blue?style=for-the-badge" width="320"/>
+      </a>
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/ec3d1637-f428-45ab-a48a-5cf21553a5c5.gif" width="320" alt="iOS Demo"/>
+      <a href="https://github.com/user-attachments/assets/ec3d1637-f428-45ab-a48a-5cf21553a5c5">
+        <img src="https://img.shields.io/badge/▶️-Watch%20Demo-blue?style=for-the-badge" width="320"/>
+      </a>
     </td>
   </tr>
 </table>
