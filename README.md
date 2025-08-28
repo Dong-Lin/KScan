@@ -21,16 +21,10 @@ Compose Multiplatform Barcode Scanning Library
   </tr>
   <tr>
     <td>
-      <video width="320" height="240" controls>
-        <source src="https://github.com/user-attachments/assets/5fb62743-71ff-4d65-ad7b-a490eb6148eb" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+      <img src="https://github.com/user-attachments/assets/5fb62743-71ff-4d65-ad7b-a490eb6148eb.gif" width="320" alt="Android Demo"/>
     </td>
     <td>
-      <video width="320" height="240" controls>
-        <source src="https://github.com/user-attachments/assets/ec3d1637-f428-45ab-a48a-5cf21553a5c5" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+      <img src="https://github.com/user-attachments/assets/ec3d1637-f428-45ab-a48a-5cf21553a5c5.gif" width="320" alt="iOS Demo"/>
     </td>
   </tr>
 </table>
