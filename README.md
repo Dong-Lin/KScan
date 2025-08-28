@@ -23,7 +23,7 @@ Compose Multiplatform Barcode Scanning Library
   </tr>
   <tr>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/eb8a72c2-ec3c-4e8c-9514-31c9a746c467" height="600" />
+      <img src="https://github.com/user-attachments/assets/9bce6d77-4028-4a45-b4a2-ad78e79cc0cd" height="600" />
     </td>
     <td align="center">
       <img src="https://github.com/user-attachments/assets/36900489-dea0-456b-bd17-00fcb49f9701" height="600" />
