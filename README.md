@@ -14,23 +14,19 @@ Compose Multiplatform Barcode Scanning Library
   <img alt="Platform iOS" src="https://img.shields.io/badge/Platform-iOS-lightgray"/>
 </p>
 
-<table align="center" style="width: 100%; table-layout: fixed; text-align: center;">
+<table align="center">
   <tr>
-    <td>
+    <td align="center">
       <h2>Android</h2>
-      <div style="margin: 0 auto; max-width: 300px;">
 
 https://github.com/user-attachments/assets/31d66cec-1492-43e0-86d0-f5f4cbfcf248
 
-      </div>
     </td>
-    <td>
+    <td align="center">
       <h2>iOS</h2>
-      <div style="margin: 0 auto; max-width: 300px;">
 
 https://github.com/user-attachments/assets/56750e3b-87ab-4e0d-99f8-ebe2bc66039a
 
-      </div>
     </td>
   </tr>
 </table>
