@@ -17,11 +17,11 @@ Compose Multiplatform Barcode Scanning Library
 <table align="center">
   <tr>
     <td align="center">
-      <h2>Android</h2>
+      <strong>Android</strong><br>
       https://github.com/user-attachments/assets/31d66cec-1492-43e0-86d0-f5f4cbfcf248
     </td>
     <td align="center">
-      <h2>iOS</h2>
+      <strong>iOS</strong><br>
       https://github.com/user-attachments/assets/56750e3b-87ab-4e0d-99f8-ebe2bc66039a
     </td>
   </tr>
