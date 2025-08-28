@@ -31,6 +31,17 @@ Compose Multiplatform Barcode Scanning Library
   </tr>
 </table>
 
+<table align="center">
+  <tr>
+    <td align="center">
+
+https://github.com/user-attachments/assets/31d66cec-1492-43e0-86d0-f5f4cbfcf248
+
+https://github.com/user-attachments/assets/56750e3b-87ab-4e0d-99f8-ebe2bc66039a
+
+  </tr>
+</table>
+
 <strong>KScan is a Compose Multiplatform library that makes it easy to scan barcodes in your apps</strong>
 
 <br>
