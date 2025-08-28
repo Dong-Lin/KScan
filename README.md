@@ -18,11 +18,19 @@ Compose Multiplatform Barcode Scanning Library
   <tr>
     <td>
       <h2>Android</h2>
-       https://github.com/user-attachments/assets/31d66cec-1492-43e0-86d0-f5f4cbfcf248
+      <div style="margin: 0 auto; max-width: 300px;">
+
+https://github.com/user-attachments/assets/31d66cec-1492-43e0-86d0-f5f4cbfcf248
+
+      </div>
     </td>
     <td>
       <h2>iOS</h2>
-      https://github.com/user-attachments/assets/56750e3b-87ab-4e0d-99f8-ebe2bc66039a
+      <div style="margin: 0 auto; max-width: 300px;">
+
+https://github.com/user-attachments/assets/56750e3b-87ab-4e0d-99f8-ebe2bc66039a
+
+      </div>
     </td>
   </tr>
 </table>
