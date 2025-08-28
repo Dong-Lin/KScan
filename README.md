@@ -14,6 +14,7 @@ Compose Multiplatform Barcode Scanning Library
   <img alt="Platform iOS" src="https://img.shields.io/badge/Platform-iOS-lightgray"/>
 </p>
 
+<br>
 
 <table align="center">
   <tr>
@@ -30,6 +31,7 @@ Compose Multiplatform Barcode Scanning Library
   </tr>
 </table>
 
+<br>
 
 <strong>KScan is a Compose Multiplatform library that makes it easy to scan barcodes in your apps</strong>
 
