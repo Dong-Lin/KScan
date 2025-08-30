@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.spmForKmp)
 }
 
 kotlin {

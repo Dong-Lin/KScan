@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
  * @param colors An optional [ScannerColors] object that specifies the colors for the scanner UI.
  */
 @Composable
-fun ScannerUI(
+internal fun ScannerUI(
     onCancel: () -> Unit,
     torchEnabled: Boolean,
     onTorchEnabled: (Boolean) -> Unit,

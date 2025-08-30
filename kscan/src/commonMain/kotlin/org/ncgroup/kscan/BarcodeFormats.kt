@@ -68,7 +68,7 @@ enum class BarcodeFormat {
  * - [TYPE_CALENDAR_EVENT]
  * - [TYPE_DRIVER_LICENSE]
  */
-expect object BarcodeFormats {
+internal expect object BarcodeFormats {
     val FORMAT_CODE_128: BarcodeFormat
     val FORMAT_CODE_39: BarcodeFormat
     val FORMAT_CODE_93: BarcodeFormat

@@ -37,7 +37,7 @@ package org.ncgroup.kscan
  * - `TYPE_CALENDAR_EVENT`: Calendar event barcode type.
  * - `TYPE_DRIVER_LICENSE`: Driver's license barcode type.
  */
-actual object BarcodeFormats {
+internal actual object BarcodeFormats {
     actual val FORMAT_CODE_128: BarcodeFormat = BarcodeFormat.FORMAT_CODE_128
     actual val FORMAT_CODE_39: BarcodeFormat = BarcodeFormat.FORMAT_CODE_39
     actual val FORMAT_CODE_93: BarcodeFormat = BarcodeFormat.FORMAT_CODE_93

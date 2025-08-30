@@ -1,5 +1,5 @@
 [versions]
-agp = "8.12.1"
+agp = "8.12.2"
 kotlin = "2.2.10"
 android-compileSdk = "36"
 android-minSdk = "24"
@@ -7,14 +7,15 @@ android-targetSdk = "34"
 androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.1"
 androidx-core-ktx = "1.17.0"
-androidx-lifecycle = "2.9.2"
+androidx-lifecycle = "2.9.3"
 compose-plugin = "1.8.2"
 dokka = "2.0.0"
-klint = "13.0.0"
+klint = "13.1.0"
 maven-publish = "0.34.0"
 mlkitBarcodeScanning-android = "17.3.0"
 androidx-camera = "1.4.2"
-moko = "0.20.0"
+moko = "0.20.1"
+spmForKmp = "1.0.0-Beta03"
 
 [libraries]
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -46,3 +47,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "klint" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+spmForKmp = { id = "io.github.frankois944.spmForKmp", version.ref = "spmForKmp" }

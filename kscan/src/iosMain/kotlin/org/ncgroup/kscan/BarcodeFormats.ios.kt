@@ -22,7 +22,7 @@ package org.ncgroup.kscan
  *
  * Note: The availability of specific formats may depend on the underlying scanning library and platform.
  */
-actual object BarcodeFormats {
+internal actual object BarcodeFormats {
     actual val FORMAT_CODE_128: BarcodeFormat = BarcodeFormat.FORMAT_CODE_128
     actual val FORMAT_CODE_39: BarcodeFormat = BarcodeFormat.FORMAT_CODE_39
     actual val FORMAT_CODE_93: BarcodeFormat = BarcodeFormat.FORMAT_CODE_93
