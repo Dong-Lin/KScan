@@ -186,3 +186,6 @@ if (showScanner) {
     }
 }
 ```
+## 🤝 Contributing
+
+If you’d like to contribute whether it’s fixing bugs, improving documentation, adding features, or helping with maintenance, your support is greatly appreciated!  
