@@ -9,5 +9,4 @@ build/
 .cxx
 sample/iosApp/iosApp.xcodeproj/*
 !sample/iosApp/iosApp.xcodeproj/project.pbxproj
-gradle.properties
 .kotlin
