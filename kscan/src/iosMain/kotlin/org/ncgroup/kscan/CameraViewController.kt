@@ -181,6 +181,7 @@ class CameraViewController(
                 Barcode(
                     data = value,
                     format = appSpecificFormat.toString(),
+                    rawBytes = value.encodeToByteArray(),
                 )
 
             if (!filter(barcode)) return
