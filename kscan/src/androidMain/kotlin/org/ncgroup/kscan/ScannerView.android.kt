@@ -33,6 +33,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
  * @param colors The colors to be used for the scanner UI.
  * @param showUi A boolean indicating whether to show the scanner UI.
  * @param scannerController An optional controller for managing scanner actions.
+ * @param scanRegion An optional region of interest for barcode scanning.
+ * @param filter A filter function for barcode results.
  * @param result A callback function that receives the barcode scanning result.
  */
 @Composable
@@ -42,6 +44,7 @@ actual fun ScannerView(
     colors: ScannerColors,
     showUi: Boolean,
     scannerController: ScannerController?,
+    scanRegion: ScanRegion?,
     filter: (Barcode) -> Boolean,
     result: (BarcodeResult) -> Unit,
 ) {
@@ -128,6 +131,7 @@ actual fun ScannerView(
                             BarcodeAnalyzer(
                                 camera = camera,
                                 codeTypes = codeTypes,
+                                scanRegion = scanRegion,
                                 onSuccess = { scannedBarcodes ->
                                     result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
                                     cameraProvider?.unbind(imageAnalysis)
@@ -167,6 +171,7 @@ actual fun ScannerView(
                 zoomRatio = zoomRatio,
                 zoomRatioOnChange = { ratio -> cameraControl?.setZoomRatio(ratio) },
                 maxZoomRatio = maxZoomRatio,
+                scanRegion = scanRegion,
                 colors = colors,
             )
         }

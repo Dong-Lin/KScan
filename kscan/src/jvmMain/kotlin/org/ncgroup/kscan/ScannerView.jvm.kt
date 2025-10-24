@@ -10,6 +10,7 @@ actual fun ScannerView(
     colors: ScannerColors,
     showUi: Boolean,
     scannerController: ScannerController?,
+    scanRegion: ScanRegion?,
     filter: (Barcode) -> Boolean,
     result: (BarcodeResult) -> Unit
 ) {
