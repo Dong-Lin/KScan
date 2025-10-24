@@ -29,6 +29,7 @@ actual fun ScannerView(
     colors: ScannerColors,
     showUi: Boolean,
     scannerController: ScannerController?,
+    scanRegion: ScanRegion?,
     filter: (Barcode) -> Boolean,
     result: (BarcodeResult) -> Unit,
 ) {
@@ -77,6 +78,7 @@ actual fun ScannerView(
             CameraViewController(
                 device = captureDevice,
                 codeTypes = codeTypes,
+                scanRegion = scanRegion,
                 filter = filter,
                 onBarcodeSuccess = { scannedBarcodes ->
                     result(BarcodeResult.OnSuccess(scannedBarcodes.first()))
@@ -123,6 +125,7 @@ actual fun ScannerView(
                     zoomRatio = ratio
                 },
                 maxZoomRatio = maxZoomRatio,
+                scanRegion = scanRegion,
                 colors = colors,
             )
         }

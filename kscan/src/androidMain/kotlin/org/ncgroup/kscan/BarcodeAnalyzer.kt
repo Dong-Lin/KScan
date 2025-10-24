@@ -32,6 +32,7 @@ import com.google.mlkit.vision.common.InputImage
  *
  * It features:
  * - **Configurable Barcode Types**: Scans for specific barcode formats defined by `codeTypes`.
+ * - **Region of Interest**: Optionally restricts scanning to a specific region of the camera preview.
  * - **Zoom Suggestion**: Utilizes ML Kit's zoom suggestion feature to prompt the user to zoom if a barcode is detected but is too small. The zoom is handled automatically if the camera supports it.
  * - **Duplicate Filtering**: To ensure accuracy and prevent multiple triggers for the same barcode, a barcode must be detected twice in quick succession before it's considered successfully processed.
  * - **Single Success Processing**: Once a barcode is successfully processed (detected twice), further analysis is stopped to prevent redundant callbacks.
@@ -44,6 +45,7 @@ import com.google.mlkit.vision.common.InputImage
  *
  * @property camera The [Camera] instance, used for zoom control. Can be null if zoom control is not needed or available.
  * @property codeTypes A list of [BarcodeFormat] enums specifying which barcode types to scan for. If empty or contains `BarcodeFormat.FORMAT_ALL_FORMATS`, all supported formats are scanned.
+ * @property scanRegion An optional [ScanRegion] defining the region of interest for barcode detection. If null, the entire image is scanned.
  * @property onSuccess A callback function that is invoked when a barcode is successfully detected and validated. It receives a list containing the single detected [Barcode].
  * @property onFailed A callback function that is invoked when an error occurs during the image analysis or barcode scanning process. It receives the [Exception] that occurred.
  * @property onCanceled A callback function that is invoked if the barcode scanning task is canceled.
@@ -51,6 +53,7 @@ import com.google.mlkit.vision.common.InputImage
 class BarcodeAnalyzer(
     private val camera: Camera?,
     private val codeTypes: List<BarcodeFormat>,
+    private val scanRegion: ScanRegion?,
     private val onSuccess: (List<Barcode>) -> Unit,
     private val onFailed: (Exception) -> Unit,
     private val filter: (Barcode) -> Boolean,
@@ -76,7 +79,9 @@ class BarcodeAnalyzer(
 
     private val scanner = BarcodeScanning.getClient(scannerOptions)
     private val barcodesDetected = mutableMapOf<String, Int>()
-    private var hasSuccessfullyProcessedBarcode = false //
+    private var hasSuccessfullyProcessedBarcode = false
+    private var imageWidth: Int = 0
+    private var imageHeight: Int = 0
 
     @androidx.annotation.OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
@@ -90,6 +95,10 @@ class BarcodeAnalyzer(
                 imageProxy.close()
                 return
             }
+
+        // Store image dimensions for ROI calculations
+        imageWidth = imageProxy.width
+        imageHeight = imageProxy.height
 
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
@@ -117,6 +126,11 @@ class BarcodeAnalyzer(
         if (hasSuccessfullyProcessedBarcode) return
 
         for (mlKitBarcode in mlKitBarcodes) {
+            // Check if barcode is within the scan region (if specified)
+            if (scanRegion != null && !isBarcodeInRegion(mlKitBarcode, scanRegion)) {
+                continue
+            }
+
             val displayValue = mlKitBarcode.displayValue ?: continue
             val rawBytes = mlKitBarcode.rawBytes ?: displayValue.encodeToByteArray()
 
@@ -138,6 +152,37 @@ class BarcodeAnalyzer(
                 break
             }
         }
+    }
+
+    /**
+     * Checks if a barcode's bounding box intersects with the specified scan region.
+     *
+     * @param mlKitBarcode The detected barcode from ML Kit.
+     * @param region The scan region to check against.
+     * @return true if the barcode is within the region, false otherwise.
+     */
+    private fun isBarcodeInRegion(
+        mlKitBarcode: com.google.mlkit.vision.barcode.common.Barcode,
+        region: ScanRegion,
+    ): Boolean {
+        val boundingBox = mlKitBarcode.boundingBox ?: return false
+
+        // Return false if we don't have valid image dimensions yet
+        if (imageWidth == 0 || imageHeight == 0) return false
+
+        // Get the center point of the barcode in pixels
+        val barcodeCenterX = boundingBox.exactCenterX()
+        val barcodeCenterY = boundingBox.exactCenterY()
+
+        // Normalize barcode center coordinates (0.0 to 1.0)
+        val normalizedX = barcodeCenterX / imageWidth
+        val normalizedY = barcodeCenterY / imageHeight
+
+        // Check if the barcode center is within the scan region
+        return normalizedX >= region.left &&
+            normalizedX <= region.right &&
+            normalizedY >= region.top &&
+            normalizedY <= region.bottom
     }
 
     private fun isRequestedFormat(mlKitBarcode: com.google.mlkit.vision.barcode.common.Barcode): Boolean {

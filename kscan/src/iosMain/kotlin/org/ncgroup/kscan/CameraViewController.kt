@@ -42,6 +42,7 @@ import platform.darwin.dispatch_get_main_queue
  *
  * @property device The AVCaptureDevice to use for capturing video.
  * @property codeTypes A list of BarcodeFormat types to detect.
+ * @property scanRegion An optional region of interest for barcode detection.
  * @property onBarcodeSuccess A callback function that is invoked when barcodes are successfully detected.
  * @property onBarcodeFailed A callback function that is invoked when an error occurs during barcode scanning.
  * @property onBarcodeCanceled A callback function that is invoked when barcode scanning is canceled. (Currently not used within this class)
@@ -52,6 +53,7 @@ import platform.darwin.dispatch_get_main_queue
 class CameraViewController(
     private val device: AVCaptureDevice,
     private val codeTypes: List<BarcodeFormat>,
+    private val scanRegion: ScanRegion?,
     private val onBarcodeSuccess: (List<Barcode>) -> Unit,
     private val onBarcodeFailed: (Exception) -> Unit,
     private val onBarcodeCanceled: () -> Unit,
@@ -163,10 +165,54 @@ class CameraViewController(
                     as? AVMetadataMachineReadableCodeObject
             }
             .filter { barcodeObject ->
-                isRequestedFormat(barcodeObject.type)
+                isRequestedFormat(barcodeObject.type) && isBarcodeInRegion(barcodeObject)
             }.forEach { barcodeObject ->
                 processDetectedBarcode(barcodeObject.stringValue ?: "", barcodeObject.type)
             }
+    }
+
+    /**
+     * Checks if a barcode is within the specified scan region.
+     *
+     * @param barcodeObject The detected barcode object.
+     * @return true if the barcode is within the region or no region is specified, false otherwise.
+     */
+    @OptIn(ExperimentalForeignApi::class)
+    private fun isBarcodeInRegion(barcodeObject: AVMetadataMachineReadableCodeObject): Boolean {
+        // If no scan region is specified, accept all barcodes
+        if (scanRegion == null) return true
+
+        // Get the barcode's bounds in the preview layer coordinate system
+        val bounds = barcodeObject.bounds
+
+        // Extract CGRect components using platform.CoreGraphics extensions
+        val originX = platform.CoreGraphics.CGRectGetMinX(bounds)
+        val originY = platform.CoreGraphics.CGRectGetMinY(bounds)
+        val boundsWidth = platform.CoreGraphics.CGRectGetWidth(bounds)
+        val boundsHeight = platform.CoreGraphics.CGRectGetHeight(bounds)
+
+        // Calculate the center point of the barcode
+        val centerX = originX + (boundsWidth / 2.0)
+        val centerY = originY + (boundsHeight / 2.0)
+
+        // Get the preview layer frame for normalization
+        if (!::previewLayer.isInitialized) return false
+        val previewFrame = previewLayer.frame
+        val previewWidth = platform.CoreGraphics.CGRectGetWidth(previewFrame)
+        val previewHeight = platform.CoreGraphics.CGRectGetHeight(previewFrame)
+
+        // Avoid division by zero
+        if (previewWidth == 0.0 || previewHeight == 0.0) return false
+
+        // Normalize coordinates (0.0 to 1.0)
+        val normalizedX = (centerX / previewWidth).toFloat()
+        val normalizedY = (centerY / previewHeight).toFloat()
+
+        // Check if the barcode center is within the scan region
+        return normalizedX >= scanRegion.left &&
+            normalizedX <= scanRegion.right &&
+            normalizedY >= scanRegion.top &&
+            normalizedY <= scanRegion.bottom
     }
 
     private fun processDetectedBarcode(
