@@ -39,13 +39,33 @@ Compose Multiplatform Barcode Scanning Library
 
 <strong>To integrate KScan into your project</strong>
 
-Add the dependency in your common module's commonMain source set
+### Using JitPack (Recommended)
 
-<br>
+Add JitPack repository in your `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+```
+
+Add the dependency in your common module's commonMain source set:
 
 ```Kotlin
-implementation("io.github.ismai117:KScan:0.2.0")
+implementation("com.github.Dong-Lin:KScan:0.3.2")
 ```
+
+### Using Maven Central
+
+```Kotlin
+implementation("io.github.Dong-Lin:KScan:0.3.2")
+```
+
+> **Note**: This is a fork of [ismai117/KScan](https://github.com/ismai117/KScan) with added ROI support. See [SETUP.md](SETUP.md) for detailed integration instructions.
 
 <br>
 
@@ -142,6 +162,43 @@ if (showScanner) {
     }
 }
 ```
+
+**Region of Interest (ROI)**
+
+You can restrict barcode scanning to a specific region of the camera preview using `scanRegion`. This improves performance and accuracy by only detecting barcodes within the defined area:
+
+```Kotlin
+// Define a centered scan region (60% width, 40% height)
+val scanRegion = ScanRegion.centered(
+    width = 0.6f,
+    height = 0.4f
+)
+
+if (showScanner) {
+    ScannerView(
+        codeTypes = listOf(BarcodeFormats.FORMAT_QR_CODE),
+        scanRegion = scanRegion  // Only detect barcodes in this region
+    ) { result ->
+        // Handle result
+    }
+}
+```
+
+You can also create custom regions:
+
+```Kotlin
+// Custom region: top-right corner
+val customRegion = ScanRegion(
+    left = 0.5f,   // Start at 50% from left
+    top = 0.1f,    // Start at 10% from top
+    width = 0.4f,  // 40% width
+    height = 0.3f  // 30% height
+)
+```
+
+When a scan region is specified, the UI will automatically show a visual overlay highlighting the active scanning area.
+
+**Custom Scanner UI**
 
 To build a custom scanner UI with torch and zoom control, set showUi = false and use a ScannerController.
 

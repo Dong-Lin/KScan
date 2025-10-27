@@ -64,36 +64,36 @@ android {
     }
 }
 
-mavenPublishing {
-//    publishToMavenCentral(SonatypeHost.DEFAULT)
-    // or when publishing to https://s01.oss.sonatype.org
-    publishToMavenCentral()
-    signAllPublications()
-    coordinates("io.github.ismai117", "KScan", "0.3.1")
-
-    pom {
-        name.set(project.name)
-        description.set("Compose Multiplatform Barcode Scanning Library")
-        inceptionYear.set("2024")
-        url.set("https://github.com/ismai117/KScan/")
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            }
-        }
-        developers {
-            developer {
-                id.set("ismai117")
-                name.set("ismai117")
-                url.set("https://github.com/ismai117/")
-            }
-        }
-        scm {
-            url.set("https://github.com/ismai117/KScan/")
-            connection.set("scm:git:git://github.com/ismai117/KScan.git")
-            developerConnection.set("scm:git:ssh://git@github.com/ismai117/KScan.git")
-        }
-    }
-}
+//mavenPublishing {
+////    publishToMavenCentral(SonatypeHost.DEFAULT)
+//    // or when publishing to https://s01.oss.sonatype.org
+////    publishToMavenCentral()
+////    signAllPublications()
+////    coordinates("io.github.Dong-Lin", "KScan", "0.3.2")
+//
+//    pom {
+//        name.set(project.name)
+//        description.set("Compose Multiplatform Barcode Scanning Library with ROI Support")
+//        inceptionYear.set("2024")
+//        url.set("https://github.com/Dong-Lin/KScan/")
+//        licenses {
+//            license {
+//                name.set("The Apache License, Version 2.0")
+//                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+//                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+//            }
+//        }
+//        developers {
+//            developer {
+//                id.set("Dong-Lin")
+//                name.set("Dong Lin")
+//                url.set("https://github.com/Dong-Lin/")
+//            }
+//        }
+//        scm {
+//            url.set("https://github.com/Dong-Lin/KScan/")
+//            connection.set("scm:git:git://github.com/Dong-Lin/KScan.git")
+//            developerConnection.set("scm:git:ssh://git@github.com/Dong-Lin/KScan.git")
+//        }
+//    }
+//}
